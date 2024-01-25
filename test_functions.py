@@ -27,7 +27,5 @@ while True:
         position_number = int(position_number)
         
         arm.setPosition(servo_number, position_number, wait=False)
-        print("Servo", servo_number, "position set to", position_number)
-        print("get position: ", arm.getPosition(servo_number))
     except ValueError:
         print("Invalid input. Please enter a valid servo number and position number.")

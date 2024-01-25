@@ -171,7 +171,6 @@ class Controller:
                 return None
         else:  # Is USB
             self._input_report = self._device.read(64, 50)
-            print(self._input_report)
             if self._input_report[0] == self.SIGNATURE and self._input_report[1] == self.SIGNATURE and self._input_report[3] == cmd:
                 length = self._input_report[2]
                 data = self._input_report[4:4 + length]
