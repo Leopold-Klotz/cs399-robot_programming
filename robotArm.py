@@ -109,7 +109,7 @@ class RobotArm(Controller):
 
     def say_hello(self):
         engine = pyttsx3.init()
-        engine.say("Hello, my name is Xarm. I am a robot arm.")
+        engine.say("Hello, my name is X-arm. I am a robot arm.")
         engine.runAndWait()
 
     def speak(self, text):
@@ -142,42 +142,70 @@ class RobotArm(Controller):
         speech_thread.join() # wait for the speaking to finish
 
 
-if __name__ == "__main__":
+
+def main():
     port = "USB"  # Replace with the correct port
     arm = RobotArm(port)
     battery_voltage = arm.getBatteryVoltage()
     print('Battery voltage (volts):', battery_voltage) # plugged into wall returns 7.411 (volts)
 
-    input1 = input("Press 'h' to home arm...\n'w' to wave...\n")
-    if input1 == "h":
-        arm.home_arm()
-    elif input1 == "w":
-        arm.wave()
-    input("Press Enter to continue...")
-
     while True:
-        articulation_number = input("Enter articulation number (0-5): ")
-        position_number = input("Enter position number: ")
-        
-        try:
-            articulation_number = int(articulation_number)
-            position_number = int(position_number)
-            
-            if articulation_number == 0:
-                arm.savePositionSettings()
-            elif articulation_number == 1:
-                arm.setArt1(position_number, wait=False)
-            elif articulation_number == 2:
-                arm.setArt2(position_number, wait=False)
-            elif articulation_number == 3:
-                arm.setArt3(position_number, wait=False)
-            elif articulation_number == 4:
-                arm.setArt4(position_number, wait=False)
-            elif articulation_number == 5:
-                arm.setArt5(position_number, wait=False)
-            else:
-                print("Invalid articulation number. Please enter a number between 0 and 5.")
+        print("Options:")
+        print("1. Home Arm")
+        print("2. Wave")
+        print("3. Position Control")
+        print("0. Exit")
 
-        except ValueError:
-            print("Invalid input. Please enter a valid articulation number and position number.")
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            arm.home_arm()
+        elif choice == "2":
+            arm.wave()
+        elif choice == "3":
+            while True:
+                print("Position Control:")
+                print("0. Save Position")
+                print("-1. Load Position")
+                print("Articulation Number (1-5): Move articulation")
+                print("6. Move Claw")
+                print("9. Back to main menu")
+
+                control_choice = input("Enter your choice: ")
+
+                if control_choice == "0":
+                    arm.savePositionSettings()
+                elif control_choice == "-1":
+                    position_name = input("Enter the position name to load: ")
+                    arm.loadPositionSettings(position_name)
+                elif control_choice == "6":
+                    claw_position = int(input("Enter the claw position: "))
+                    arm.setClaw(claw_position, wait=False)
+                elif control_choice == "9":
+                    break
+                else:
+                    articulation_number = int(control_choice)
+                    position_number = int(input("Enter the position number: "))
+
+                    if articulation_number == 1:
+                        arm.setArt1(position_number, wait=False)
+                    elif articulation_number == 2:
+                        arm.setArt2(position_number, wait=False)
+                    elif articulation_number == 3:
+                        arm.setArt3(position_number, wait=False)
+                    elif articulation_number == 4:
+                        arm.setArt4(position_number, wait=False)
+                    elif articulation_number == 5:
+                        arm.setArt5(position_number, wait=False)
+                    else:
+                        print("Invalid articulation number. Please enter a number between 1 and 5.")
+        elif choice == "0":
+            break
+        else:
+            print("Invalid choice. Please enter a valid option.")
+
+        input("Press Enter to continue...")
+
+if __name__ == "__main__":
+    main()
 

@@ -24,12 +24,20 @@
       "Art5": 500,
       "Claw": null
     },
-    "genericGrip": {
+    "prepKick": {
       "Art1": 500,
       "Art2": 1750,
-      "Art3": 500,
-      "Art4": 1500,
+      "Art3": 700,
+      "Art4": 500,
       "Art5": 500,
+      "Claw": null
+    },
+    "squat": {
+      "Art1": null,
+      "Art2": 2000,
+      "Art3": 2500,
+      "Art4": 1000,
+      "Art5": null,
       "Claw": null
     }
   }
