@@ -14,7 +14,11 @@ def grabBall(arm):
     print("Moving arm to ball spot...")
     arm.loadPositionSettings("ballSquare")
     # open claw
+    print("Opening claw...")
+    arm.setClaw(1100, wait=False)
     # close claw
+    print("Closing claw...")
+    arm.setClaw(2250, wait=False)
 
     # transport ball
     print("Transporting ball...")
@@ -26,6 +30,8 @@ def grabBall(arm):
     time.sleep(1)
 
     # open claw
+    print("Opening claw...")
+    arm.setClaw(1200, wait=False)
 
     speech_thread.join() # wait for the speaking to finish
 
@@ -43,6 +49,8 @@ def kickBall(arm):
     time.sleep(2)
 
     # close claw
+    print("Closing claw...")
+    arm.setClaw(2300, wait=False)
 
     # swift kick
     print("Swift kick!")
@@ -77,7 +85,7 @@ def main():
     port = "USB"  # Replace with the correct port
     arm = RobotArm(port)
 
-    arm.wave()
+    # arm.wave()
     time.sleep(1)
     arm.speak("Today I will be playing soccer!")
     print("Grabbing ball...")

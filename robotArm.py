@@ -135,8 +135,6 @@ class RobotArm(Controller):
 
         speech_thread.join() # wait for the speaking to finish
 
-
-
 def main():
     port = "USB"  # Replace with the correct port
     arm = RobotArm(port)
