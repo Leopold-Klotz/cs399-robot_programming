@@ -2,8 +2,9 @@ from xarm import Controller
 import time
 import pyttsx3
 import threading
+import json
 
-class student_controller(Controller):
+class RobotArm(Controller):
     '''
     Basic information:
     Art 1 = Servo 6 Base. Range 500-2500. 500 full CW (top down view), 2500 full CCW (top down view)
@@ -47,6 +48,56 @@ class student_controller(Controller):
         self.setPosition(self.art5["Servo Number"], position, wait=wait)
         self.art5["Position"] = position
         time.sleep(0.5)
+
+    def setClaw(self, position, wait=False):
+        self.setPosition(self.claw["Servo Number"], position, wait=wait)
+        self.claw["Position"] = position
+        time.sleep(0.5)
+
+    def savePositionSettings(self):
+        name = input("Enter a name for the position settings: ")
+        positions = {
+            "Art1": self.art1["Position"],
+            "Art2": self.art2["Position"],
+            "Art3": self.art3["Position"],
+            "Art4": self.art4["Position"],
+            "Art5": self.art5["Position"],
+            "Claw": self.claw["Position"]
+        }
+
+        with open("saved_positions.json", "r+") as file:
+            try:
+                saved_positions = json.load(file)
+            except json.JSONDecodeError:
+                saved_positions = {"positions": {}}
+
+            saved_positions["positions"][name] = positions
+            file.seek(0)
+            json.dump(saved_positions, file, indent=2)
+            file.truncate()
+
+    def loadPositionSettings(self, name):
+        with open("saved_positions.json", "r") as file:
+            try:
+                saved_positions = json.load(file)
+            except json.JSONDecodeError:
+                saved_positions = {"positions": {}}
+
+            positions = saved_positions["positions"].get(name)
+            if positions is not None:
+                print(f"Trying to parse: {positions}")
+                self.setArt1(positions.get("Art1", 0), wait=False)
+                self.setArt2(positions.get("Art2", 0), wait=False)
+                self.setArt3(positions.get("Art3", 0), wait=False)
+                self.setArt4(positions.get("Art4", 0), wait=False)
+                self.setArt5(positions.get("Art5", 0), wait=False)
+                claw_position = positions.get("Claw")
+                if claw_position is not None:
+                    self.setClaw(claw_position, wait=False)
+            else:
+                print(f"No positions found for {name}")
+        time.sleep(0.5)
+
         
     # Set all of the articulation positions to upright and their middle values.
     def home_arm(self):
@@ -59,6 +110,11 @@ class student_controller(Controller):
     def say_hello(self):
         engine = pyttsx3.init()
         engine.say("Hello, my name is Xarm. I am a robot arm.")
+        engine.runAndWait()
+
+    def speak(self, text):
+        engine = pyttsx3.init()
+        engine.say(text)
         engine.runAndWait()
 
     # Wave to the user 3 times
@@ -88,7 +144,7 @@ class student_controller(Controller):
 
 if __name__ == "__main__":
     port = "USB"  # Replace with the correct port
-    arm = student_controller(port)
+    arm = RobotArm(port)
     battery_voltage = arm.getBatteryVoltage()
     print('Battery voltage (volts):', battery_voltage) # plugged into wall returns 7.411 (volts)
 
@@ -100,14 +156,16 @@ if __name__ == "__main__":
     input("Press Enter to continue...")
 
     while True:
-        articulation_number = input("Enter articulation number (1-5): ")
+        articulation_number = input("Enter articulation number (0-5): ")
         position_number = input("Enter position number: ")
         
         try:
             articulation_number = int(articulation_number)
             position_number = int(position_number)
             
-            if articulation_number == 1:
+            if articulation_number == 0:
+                arm.savePositionSettings()
+            elif articulation_number == 1:
                 arm.setArt1(position_number, wait=False)
             elif articulation_number == 2:
                 arm.setArt2(position_number, wait=False)
@@ -118,7 +176,7 @@ if __name__ == "__main__":
             elif articulation_number == 5:
                 arm.setArt5(position_number, wait=False)
             else:
-                print("Invalid articulation number. Please enter a number between 1 and 5.")
+                print("Invalid articulation number. Please enter a number between 0 and 5.")
 
         except ValueError:
             print("Invalid input. Please enter a valid articulation number and position number.")
