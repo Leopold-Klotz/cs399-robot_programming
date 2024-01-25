@@ -127,15 +127,9 @@ class RobotArm(Controller):
         time.sleep(1)
         speech_thread.start() # start speaking
         for _ in range(2):  # Loop through the sequence to wave
-            self.setArt5(1000, wait=False)
-            self.setArt3(1000, wait=False)
-            self.setArt4(2000, wait=False)
-            self.setArt5(2000, wait=False)
+            self.setPosition([[2, 1000], [3, 2000], [4, 1000]], wait=False)
             time.sleep(1)
-            self.setArt5(1000, wait=False)
-            self.setArt3(2000, wait=False)
-            self.setArt4(1000, wait=False)
-            self.setArt5(2000, wait=False)
+            self.setPosition([[2, 2000], [3, 1000], [4, 2000]], wait=False)
             time.sleep(1)
         self.home_arm()
 
