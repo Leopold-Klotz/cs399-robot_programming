@@ -15,9 +15,10 @@ class Controller:
             import serial
             self._device = serial.Serial(com_port, 9600, timeout = 1)
             self._is_serial = True
+            
         elif com_port.startswith('USB'):
             import hid
-            self._device = hid.device()
+            self._device = hid.device(0x0483, 0x5750)
             serial_number = com_port.strip('USB')
             if serial_number:
                 self._device.open(0x0483, 0x5750, serial_number)
@@ -28,6 +29,7 @@ class Controller:
                 print('Serial number:', self._device.get_serial_number_string())
             self._usb_recv_event = False
             self._is_serial = False
+
         else:
             raise ValueError('com_port parameter incorrect.')
         self.debug = debug
