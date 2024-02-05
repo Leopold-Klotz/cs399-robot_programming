@@ -35,6 +35,8 @@ class Map():
         self.width = width
         self.height = height
         self.grid = [[Cell() for _ in range(width)] for _ in range(height)]
+        self.contains_maze = False
+        self.solution = None
         self.assign_cell_positions()
 
     def assign_cell_positions(self):
@@ -74,6 +76,15 @@ class Map():
         print("+")
 
     def populate_map(self, img_path):
+        """
+        Load in a png file of a maze and create a map object with it. The map object needs to include the proper boundaries to represent the maze.
+        Mazes are currently 4x4 and generated with https://www.mazegenerator.net/. 
+        There is a restriction on the maze that the entrance is always on the top.
+        Maze files:
+        - random_maze1.png (4x4 maze)
+        - random_maze2.png (4x4 maze)
+        - random_maze3.png (4x4 maze)
+        """
         # Load the image
         maze_image = cv2.imread(img_path)
 
@@ -126,49 +137,14 @@ class Map():
                 else:
                     self.grid[i][j].set_right_boundary(False)
 
-    def generate_random_maze(self):
-        entry_point = (random.randint(0, self.width - 1), 0)
-        exit_point = (random.randint(0, self.width - 1), self.height - 1)
+        self.contains_maze = True
+        self.solution = []
 
-        stack = [entry_point]
-        visited = set()
-
-        while stack:
-            current_cell = stack[-1]
-            x, y = current_cell
-            visited.add(current_cell)
-
-            neighbors = [
-                (x - 1, y),
-                (x + 1, y),
-                (x, y - 1),
-                (x, y + 1),
-            ]
-            unvisited_neighbors = [neighbor for neighbor in neighbors if 0 <= neighbor[0] < self.width and 0 <= neighbor[1] < self.height and neighbor not in visited]
-
-            if unvisited_neighbors:
-                next_cell = random.choice(unvisited_neighbors)
-                stack.append(next_cell)
-
-                # Remove boundary between current cell and the chosen neighbor
-                if next_cell == (x - 1, y):
-                    self.grid[y][x].set_left_boundary(False)
-                    self.grid[next_cell[1]][next_cell[0]].set_right_boundary(False)
-                elif next_cell == (x + 1, y):
-                    self.grid[y][x].set_right_boundary(False)
-                    self.grid[next_cell[1]][next_cell[0]].set_left_boundary(False)
-                elif next_cell == (x, y - 1):
-                    self.grid[y][x].set_upper_boundary(False)
-                    self.grid[next_cell[1]][next_cell[0]].set_bottom_boundary(False)
-                elif next_cell == (x, y + 1):
-                    self.grid[y][x].set_bottom_boundary(False)
-                    self.grid[next_cell[1]][next_cell[0]].set_upper_boundary(False)
-
-                # Check if the exit point is reached
-                if next_cell == exit_point:
-                    break
-            else:
-                stack.pop()
+    def solve_map(self):
+        """
+        Solve the map
+        """
+        pass
 
 if __name__ == "__main__":
     maze_map = Map(4, 4)
