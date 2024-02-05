@@ -37,7 +37,7 @@ class Map():
         self.grid = [[Cell() for _ in range(width)] for _ in range(height)]
         self.contains_maze = False
         self.solution = None
-        self.assign_cell_positions()
+        self.assign_cell_positions()        
 
     def assign_cell_positions(self):
         """
@@ -139,6 +139,14 @@ class Map():
 
         self.contains_maze = True
         self.solution = []
+
+    def find_entrance(self):
+        """
+        Find the entrance of the maze.
+        """
+        for i, cell in enumerate(self.grid[0]):
+            if not cell.upper_boundary:
+                return i # Return the column number of the entrance (entrance is always on the top row)
 
     def solve_map(self):
         """
