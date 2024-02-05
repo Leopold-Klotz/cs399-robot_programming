@@ -11,7 +11,7 @@ import cv2
 from map import Map
 
 # Load the image
-maze_image = cv2.imread('random_maze2.png')
+maze_image = cv2.imread('random_maze1.png')
 
 # set the image size to be a multiple of 4
 maze_image = cv2.resize(maze_image, (640, 640))
@@ -21,9 +21,6 @@ gray = cv2.cvtColor(maze_image, cv2.COLOR_BGR2GRAY)
 
 # Threshold the image
 _, thresh = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)
-
-# Print the image size
-print(f"Image size: {thresh.shape}")
 
 
 # Divide the image into 4x4 grid
@@ -38,10 +35,7 @@ maze_map = Map(width, height)
 # Set the boundaries of the cells based on black pixels on the edges
 for i in range(height): # Loop through the rows
     for j in range(width): # Loop through the columns
-        
-
         cell = thresh[i * cell_height:(i + 1) * cell_height, j * cell_width:(j + 1) * cell_width] # cell is a 2D array of the cell's pixels
-        print(f"Cell size: {cell.shape}")
 
         # get a 1d array of the top row of pixels of the cell
         cell = cell.flatten()
@@ -50,28 +44,11 @@ for i in range(height): # Loop through the rows
         left_column = cell[0::cell_width]
         right_column = cell[cell_width - 1::cell_width]
 
-        print(f"Cell: {i}, {j}"
-              f"\nTop row: {top_row}"
-              f"\nBottom row: {bottom_row}"
-              f"\nLeft column: {left_column}"
-              f"\nRight column: {right_column}")
-
-        # check the sizes of the arrays
-        print(f"Top row size: {top_row.shape}")
-        print(f"Bottom row size: {bottom_row.shape}")
-        print(f"Left column size: {left_column.shape}")
-        print(f"Right column size: {right_column.shape}")
-
         # Get the value which appears most in the array
         top_row = max(set(top_row), key = list(top_row).count)
         bottom_row = max(set(bottom_row), key = list(bottom_row).count)
         left_column = max(set(left_column), key = list(left_column).count)
         right_column = max(set(right_column), key = list(right_column).count)
-
-        print(f"Top row: {top_row}"
-                f"\nBottom row: {bottom_row}"
-                f"\nLeft column: {left_column}"
-                f"\nRight column: {right_column}")
 
         # Set the boundaries of the cell
         if top_row == 0:
@@ -90,16 +67,6 @@ for i in range(height): # Loop through the rows
             maze_map.grid[i][j].set_right_boundary(True)
         else:
             maze_map.grid[i][j].set_right_boundary(False)
-
-        # Print the cell's boundaries
-        print(f"Cell: {i}, {j}"
-              f"\nUpper boundary: {maze_map.grid[i][j].upper_boundary}"
-              f"\nBottom boundary: {maze_map.grid[i][j].bottom_boundary}"
-              f"\nLeft boundary: {maze_map.grid[i][j].left_boundary}"
-              f"\nRight boundary: {maze_map.grid[i][j].right_boundary}")
-
-
-
 
 
 # Print the map
