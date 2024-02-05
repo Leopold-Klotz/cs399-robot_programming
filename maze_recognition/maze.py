@@ -22,7 +22,6 @@ gray = cv2.cvtColor(maze_image, cv2.COLOR_BGR2GRAY)
 # Threshold the image
 _, thresh = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)
 
-
 # Divide the image into 4x4 grid
 width = 4
 height = 4
@@ -71,3 +70,4 @@ for i in range(height): # Loop through the rows
 
 # Print the map
 maze_map.print_map()
+
