@@ -149,7 +149,6 @@ class Map():
                     self.grid[i][j].set_right_boundary(False)
 
         self.contains_maze = True
-        self.solution = []
 
     def find_entrance(self):
         """
@@ -221,12 +220,10 @@ class Map():
         path.pop()
         return False
 
-
-
 if __name__ == "__main__":
     maze_map = Map(4, 4)
 
-    maze_map.populate_map('random_maze3.png')
+    maze_map.populate_map('random_maze1.png')
     maze_map.print_map()
     maze_map.solve_map()
     maze_map.print_solution()
