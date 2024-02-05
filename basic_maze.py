@@ -1,6 +1,5 @@
 from robotArm import RobotArm
 import time
-import threading
 
 def navigateMaze(arm, positions):
     #home arm
