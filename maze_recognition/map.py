@@ -65,9 +65,11 @@ class Map():
             print("|")
 
         # Print bottom boundaries
-        for _ in range(self.width):
-            print("+---", end="")
-        print("+")
+        for j, cell in enumerate(self.grid[-1]):
+            if cell.bottom_boundary:
+                print("+---", end="")
+            else:
+                print("+   ", end="")
 
     def generate_random_maze(self):
         entry_point = (random.randint(0, self.width - 1), 0)
