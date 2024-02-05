@@ -75,11 +75,22 @@ class Map():
                 print("+   ", end="")
         print("+")
 
+    def print_solution(self):
+        if self.solution is None:
+            print("No solution found")
+            return
+        print("Solution: ", end="")
+        for i, cell in enumerate(self.solution):
+            if i == len(self.solution) - 1:
+                print(cell, end="")
+            else:
+                print(cell, end=" -> ")
+
     def populate_map(self, img_path):
         """
         Load in a png file of a maze and create a map object with it. The map object needs to include the proper boundaries to represent the maze.
         Mazes are currently 4x4 and generated with https://www.mazegenerator.net/. 
-        There is a restriction on the maze that the entrance is always on the top.
+        There is a restriction on the maze that the entrance is always on the top and the exit is always on the bottom.
         Maze files:
         - random_maze1.png (4x4 maze)
         - random_maze2.png (4x4 maze)
@@ -142,20 +153,80 @@ class Map():
 
     def find_entrance(self):
         """
-        Find the entrance of the maze.
+        Find the entrance of the maze. (The entrance is always on the top row of the maze)
         """
+        if not self.contains_maze:
+            print("No maze to find entrance")
+            return
+
         for i, cell in enumerate(self.grid[0]):
             if not cell.upper_boundary:
-                return i # Return the column number of the entrance (entrance is always on the top row)
+                return 0, i  # Return coordinates of the entrance.
+
+    def find_exit(self):
+        """
+        Find the exit of the maze. (The exit is always on the bottom row of the maze)
+        """
+        if not self.contains_maze:
+            print("No maze to find exit")
+            return
+
+        for i, cell in enumerate(self.grid[-1]):
+            if not cell.bottom_boundary:
+                return self.height - 1, i  # Return coordinates of the exit.
 
     def solve_map(self):
         """
-        Solve the map
+        Use a depth-first search to solve the maze.
         """
-        pass
+        if not self.contains_maze:
+            print("No maze to solve")
+            return
+        print("Solving maze...")
+        entrance = self.find_entrance()
+        exit = self.find_exit()
+        self.dfs(entrance[0], entrance[1], exit, [])
+        if not self.solution:
+            print("No solution found")
+        else:
+            print("Solution found")
+
+    def dfs(self, row, col, exit, path):
+        """
+        Depth-first search algorithm to solve the maze.
+        """
+        if row < 0 or row >= self.height or col < 0 or col >= self.width:
+            return False
+        if self.grid[row][col].saved_position in path:
+            return False
+        if (row, col) == exit:
+            path.append(self.grid[row][col].saved_position)
+            self.solution = path
+            return True
+
+        path.append(self.grid[row][col].saved_position)
+
+        if not self.grid[row][col].upper_boundary and self.dfs(row - 1, col, exit, path):
+            return True
+
+        if not self.grid[row][col].bottom_boundary and self.dfs(row + 1, col, exit, path):
+            return True
+
+        if not self.grid[row][col].left_boundary and self.dfs(row, col - 1, exit, path):
+            return True
+
+        if not self.grid[row][col].right_boundary and self.dfs(row, col + 1, exit, path):
+            return True
+
+        path.pop()
+        return False
+
+
 
 if __name__ == "__main__":
     maze_map = Map(4, 4)
 
-    maze_map.populate_map('random_maze1.png')
+    maze_map.populate_map('random_maze3.png')
     maze_map.print_map()
+    maze_map.solve_map()
+    maze_map.print_solution()
