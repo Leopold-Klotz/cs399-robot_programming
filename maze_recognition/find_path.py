@@ -1,26 +1,30 @@
 import cv2
+from map import Map
 
-# Load and preprocess the image
-image = cv2.imread('/path/to/image.jpg')
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+# Load the maze image
+maze_image = cv2.imread('random_maze1.png')
 
-# Apply image segmentation to identify the sheet of paper
+# Convert the image to grayscale
+maze_gray = cv2.cvtColor(maze_image, cv2.COLOR_BGR2GRAY)
 
+# Apply thresholding to create a binary image
+_, maze_binary = cv2.threshold(maze_gray, 127, 255, cv2.THRESH_BINARY)
 
-# Extract the maze region from the image
-# ...
+# Perform contour detection to find the boundaries of the maze
+contours, _ = cv2.findContours(maze_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# Preprocess the maze image
-# ...
+# Create a map object
+maze_map = Map()  # map object is a 4x4 grid
 
-# Apply maze-solving algorithm to find the solution path
-# ...
+# Populate the map with the maze information
+for row in range(4):
+    for col in range(4):
+        # Determine if the cell is a wall or open space based on contour detection results
+        is_wall = cv2.pointPolygonTest(contours[0], (col, row), False) >= 0
+        maze_map.set_cell(row, col, is_wall) 
 
-# Visualize the solution path on the original image or create a separate image
-# ...
+# Find the route through the maze
+route = maze_map.find_route()
 
-# Display the result
-cv2.imshow('Result', image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Print the route
+print(route)
