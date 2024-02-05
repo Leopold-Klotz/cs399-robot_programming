@@ -1,3 +1,6 @@
+# Author: Leopold Klotz
+# Email: klotzl@oregonstate.edu
+
 import random
 import cv2
 

@@ -1,3 +1,6 @@
+# Author: Leopold Klotz
+# Email: klotzl@oregonstate.edu
+
 from xarm import Controller
 import time
 import pyttsx3
@@ -23,6 +26,16 @@ class RobotArm(Controller):
         self.art4 = {"Servo Number": 3, "Position": None}
         self.art5 = {"Servo Number": 2, "Position": None}
         self.claw = {"Servo Number": 1, "Position": None}
+
+    """
+    Articulation Functions: control the arm's articulations as opposed to the specific servo number.
+        The purpose of creation was to get around the lack of position saving functionality for the
+        LeArm in the xArm package.
+        input: position (int) - the position to move the articulation to
+        input: wait (bool) - whether or not to wait for the arm to reach the position
+        result: moves the articulation to the specified position (saves the position in the articulation's 
+            dictionary)
+    """
 
     def setArt1(self, position, wait=False):
         self.setPosition(self.art1["Servo Number"], position, wait=wait)
@@ -55,6 +68,11 @@ class RobotArm(Controller):
         time.sleep(0.5)
 
     def savePositionSettings(self):
+        """
+        Saves the current positions of the arm's articulations to a file called saved_positions.json
+            inputs: user input for the name of the position to save. 
+            result: saves the position to saved_positions.json
+        """
         name = input("Enter a name for the position settings: ")
         positions = {
             "Art1": self.art1["Position"],
@@ -77,6 +95,11 @@ class RobotArm(Controller):
             file.truncate()
 
     def loadPositionSettings(self, name):
+        """
+        Loads the positions of the arm's articulations from a file called saved_positions.json
+            inputs: (str) the name of the position to load.
+            result: moves the arm the position from saved_positions.json
+        """
         with open("saved_positions.json", "r") as file:
             try:
                 saved_positions = json.load(file)
@@ -98,9 +121,10 @@ class RobotArm(Controller):
                 print(f"No positions found for {name}")
         time.sleep(0.5)
 
-        
-    # Set all of the articulation positions to upright and their middle values.
     def home_arm(self):
+        """
+        Moves the arm to the home position (all articulations at 1500, claw at 1500) (straight up).
+        """
         self.setArt1(1500, wait=False)
         self.setArt2(1500, wait=False)
         self.setArt3(1500, wait=False)
@@ -108,17 +132,25 @@ class RobotArm(Controller):
         self.setArt5(1500, wait=False)
 
     def say_hello(self):
+        """Speak a greeting."""
         engine = pyttsx3.init()
         engine.say("Hello, my name is X-arm. I am a robot arm.")
         engine.runAndWait()
 
     def speak(self, text):
+        """
+        Speak the input text.
+            input: text (str) - the text to speak
+            result: speaks the input text through computer speakers
+        """
         engine = pyttsx3.init()
         engine.say(text)
         engine.runAndWait()
 
-    # Wave to the user 3 times
     def wave(self):
+        """
+        Wave the arm (twice).
+        """
         # speech thread
         speech_thread = threading.Thread(target=self.say_hello)
 
@@ -176,6 +208,7 @@ def main():
                 elif control_choice == "9":
                     break
                 else:
+                    # Choose an articulation and move it to a specified position
                     articulation_number = int(control_choice)
                     position_number = int(input("Enter the position number: "))
 
