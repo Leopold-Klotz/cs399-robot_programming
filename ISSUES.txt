@@ -1,0 +1,6 @@
+Issues:
+
+
+
+Ideas:
+- Create a child class of map which represents an internal map for the arm. it should store the location of the arm (cell) or store "outside" if the arm is outside the map.
