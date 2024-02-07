@@ -255,6 +255,9 @@ class Map():
 
         path.pop()
         return False
+    
+    def get_Solution(self):
+        return self.solution
 
 if __name__ == "__main__":
     maze_map = Map(4, 4)

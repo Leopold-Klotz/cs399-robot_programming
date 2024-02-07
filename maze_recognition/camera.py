@@ -41,7 +41,7 @@ class Camera_Sensor:
             
         return False, None
     
-    def save_paper_image(self, frame, contour):
+    def save_paper_image(self, frame, contour, filename="paper_image.png"):
         # threshold the image
         _, thresh = cv2.threshold(frame, 128, 255, cv2.THRESH_BINARY)
 
@@ -53,7 +53,7 @@ class Camera_Sensor:
         # Extract and save the paper region as an image
         x, y, w, h = cv2.boundingRect(contour)
         paper_image = thresh[y:y+h, x:x+w]
-        cv2.imwrite("paper_image.png", paper_image)
+        cv2.imwrite(filename, paper_image)
         print("Paper captured and saved")
 
     def capture_frame(self):
@@ -66,7 +66,7 @@ class Camera_Sensor:
 
         return frame
     
-    def detect_paper_loop(self):
+    def detect_paper_loop(self, filename="paper_image.png"):
         while True:
             # Capture frame
             frame = self.capture_frame()
@@ -99,7 +99,7 @@ class Camera_Sensor:
                     
                     cv2.imshow('Rotated Frame', rotated_frame)
 
-                    self.save_paper_image(rotated_frame, rotated_contour)
+                    self.save_paper_image(rotated_frame, rotated_contour, filename)
                     break
 
             else:
@@ -115,6 +115,8 @@ class Camera_Sensor:
         # Release the camera and close OpenCV windows
         self.cap.release()
         cv2.destroyAllWindows()
+
+        return 0
 
 
 if __name__ == "__main__":
