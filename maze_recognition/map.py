@@ -102,6 +102,16 @@ class Map():
         # Load the image
         maze_image = cv2.imread(img_path)
 
+        # crop the image to be a square (given a printout of the generated maze on a 8.5x11 sheet of paper at 1150% scale)
+        height, width, _ = maze_image.shape
+        if height > width:
+            maze_image = maze_image[0:width, 0:width]
+        else:
+            start_row = (width - height) // 2 
+            end_row = start_row + height
+            maze_image = maze_image[0:height, start_row:end_row]
+
+
         # set the image size to be a multiple of 4
         maze_image = cv2.resize(maze_image, (640, 640))
 
@@ -110,6 +120,14 @@ class Map():
 
         # Threshold the image
         _, thresh = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)
+
+        # normalize the image
+        thresh = thresh / 255
+
+        # display the thresholded image
+        cv2.imshow('Thresholded Image', thresh) 
+        # wait for user to press enter
+        cv2.waitKey(0)
 
         # Divide the image into 4x4 grid
         cell_width = thresh.shape[1] // self.width
@@ -150,6 +168,21 @@ class Map():
                     self.grid[i][j].set_right_boundary(True)
                 else:
                     self.grid[i][j].set_right_boundary(False)
+
+        # display the image with the boundaries overlayed
+        for i, row in enumerate(self.grid):
+            for j, cell in enumerate(row):
+                if cell.upper_boundary:
+                    cv2.line(maze_image, (j * cell_width, i * cell_height), ((j + 1) * cell_width, i * cell_height), (0, 0, 255), 2)
+                if cell.bottom_boundary:
+                    cv2.line(maze_image, (j * cell_width, (i + 1) * cell_height), ((j + 1) * cell_width, (i + 1) * cell_height), (0, 0, 255), 2)
+                if cell.left_boundary:
+                    cv2.line(maze_image, (j * cell_width, i * cell_height), (j * cell_width, (i + 1) * cell_height), (0, 0, 255), 2)
+                if cell.right_boundary:
+                    cv2.line(maze_image, ((j + 1) * cell_width, i * cell_height), ((j + 1) * cell_width, (i + 1) * cell_height), (0, 0, 255), 2)
+
+        cv2.imshow('Maze with Boundaries', maze_image)
+        cv2.waitKey(0)
 
         self.contains_maze = True
 
@@ -222,11 +255,14 @@ class Map():
 
         path.pop()
         return False
+    
+    def get_Solution(self):
+        return self.solution
 
 if __name__ == "__main__":
     maze_map = Map(4, 4)
 
-    maze_map.populate_map('random_maze1.png')
+    maze_map.populate_map('cropped_maze.png')
     maze_map.print_map()
     maze_map.solve_map()
     maze_map.print_solution()
