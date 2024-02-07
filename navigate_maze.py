@@ -51,6 +51,7 @@ def main():
         choice = input("Enter '1' to scan a new maze or '2' to travel a known maze ('3' to exit): ")
 
         if choice == '1':
+            arm.home_arm()
             if scan_new_maze() != 0:
                 print("Error scanning maze, maybe visit a known maze.")
             else:
