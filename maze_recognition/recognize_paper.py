@@ -1,61 +1,185 @@
 """
-This is a script to recognize a paper in a frame and extract the paper's ROI.
+Program should take in the image paper_image.png, and remove the border around the maze.
 """
-
 
 import cv2
 
-# Global variables for ROI selection
-roi_x, roi_y, roi_width, roi_height = -1, -1, -1, -1
-selecting_roi = False
+# # Load the image
+# img = cv2.imread("paper_image.png")
 
-def select_roi(event, x, y, flags, param):
-    global roi_x, roi_y, roi_width, roi_height, selecting_roi
+# # Convert to grayscale
+# gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    if event == cv2.EVENT_LBUTTONDOWN:
-        roi_x, roi_y = x, y
-        selecting_roi = True
-    elif event == cv2.EVENT_LBUTTONUP and selecting_roi:
-        roi_width, roi_height = x - roi_x, y - roi_y
-        selecting_roi = False
+# # Apply Gaussian blur to reduce noise
+# blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
-# Open a connection to the camera
-cap = cv2.VideoCapture(0)
+# # Apply Canny edge detection
 
-# Check if the camera opened successfully
-if not cap.isOpened():
-    print("Error: Could not open camera.")
-    exit()
+# edges = cv2.Canny(blurred, 50, 150)
 
-# Prompt to capture a photo
-input("Press Enter to capture a photo...")
+# # Find contours
 
-# Capture a frame from the camera
-ret, frame = cap.read()
+# contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# Check if the frame was captured successfully
-if not ret:
-    print("Error: Could not capture a frame.")
-    exit()
+# # find the two parallel vertical contour lines which are approximately the same length, use print the length and display the image with these two contours drawn on it
+# # Iterate over the contours
+# lengths = []
+# for contour in contours:
+#     # Calculate contour area
+#     area = cv2.contourArea(contour)
 
-# Display the captured frame
-cv2.imshow('Capture', frame)
+#     # Approximate contour to a polygon
+#     perimeter = cv2.arcLength(contour, True)
+#     approx = cv2.approxPolyDP(contour, 0.02 * perimeter, True)
 
-# Set up the callback function for ROI selection
-cv2.setMouseCallback('Capture', select_roi)
+#     # Check if contour is approximately rectangular and has certain area
+#     if len(approx) > 4 and area > 1000:
+#         # Draw contours on the frame
+#         cv2.drawContours(img, [contour], -1, (0, 255, 0), 2)
+#         lengths.append(approx)
 
-# Wait for the user to select the ROI
-while True:
-    key = cv2.waitKey(1) & 0xFF
 
-    if key == ord('q') or key == 27:  # 'q' or Esc key to exit
-        break
+# # display the image with the contours drawn on it
+# cv2.imshow('Image with contours', img)
 
-# Print the selected ROI coordinates and size
-print("ROI Coordinates and Size:")
-print(f"X: {roi_x}, Y: {roi_y}")
-print(f"Width: {roi_width}, Height: {roi_height}")
+# # cropping the image to the region of the maze
+# # crop the image to the minimum x in lengths, and the maximum x in lengths and the minimum y in lengths and the maximum y in lengths
+# min_x = 10000
+# max_x = 0
+# min_y = 10000
+# max_y = 0
+# for contour in lengths:
+#     for point in contour:
+#         x = point[0][0]
+#         y = point[0][1]
+#         if x < min_x:
+#             min_x = x
+#         if x > max_x:
+#             max_x = x
+#         if y < min_y:
+#             min_y = y
+#         if y > max_y:
+#             max_y = y
 
-# Release the camera and close OpenCV windows
-cap.release()
-cv2.destroyAllWindows()
+# # crop the image
+# img = img[min_y:max_y, min_x:max_x]
+
+# # display the cropped image
+# cv2.imshow('Cropped Image', img)
+# cv2.waitKey(0)
+
+# for i in range(img.shape[0]): 
+#     for j in range(img.shape[1]):
+#         # Check if the pixel is not white
+#         if not all(channel > 240 for channel in img[i][j]):
+#             # Set the pixel to black
+#             img[i][j] = [0, 0, 0]
+
+            
+
+# for i in range(5, img.shape[0] - 5):
+#     for j in range(5, img.shape[1] - 5):
+#         if all(channel > 240 for channel in img[i][j]):
+#             if i > 0 and i < img.shape[0] - 1:
+#                 if not all(channel > 240 for channel in img[i - 1][j]) and not all(channel > 240 for channel in img[i + 1][j]):
+#                     img[i][j] = [0, 0, 0]
+#             else:
+#                 img[i][j] = [0, 0, 0]
+
+#         if all(channel > 240 for channel in img[i][j]):
+#             if j > 0 and j < img.shape[1] - 1:
+#                 if not all(channel > 240 for channel in img[i][j - 1]) and not all(channel > 240 for channel in img[i][j + 1]):
+#                     img[i][j] = [0, 0, 0]
+#             else:
+#                 img[i][j] = [0, 0, 0]
+
+# # set the first and last 5 columns to black
+# for i in range(img.shape[0]):
+#     for j in range(5):
+#         img[i][j] = [0, 0, 0]
+#         img[i][img.shape[1] - 1 - j] = [0, 0, 0]
+
+# # display the cropped image
+# cv2.imshow('Bordered Image', img)
+# cv2.waitKey(0)
+
+# # save the cropped image
+# cv2.imwrite("cropped_maze.png", img)
+
+
+
+def remove_maze_border(input_image, output_image):
+    # Load the image
+    img = cv2.imread(input_image)
+
+    # Convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Apply Gaussian blur to reduce noise
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+    # Apply Canny edge detection
+    edges = cv2.Canny(blurred, 50, 150)
+
+    # Find contours
+    contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Find the two parallel vertical contour lines which are approximately the same length
+    lengths = []
+    for contour in contours:
+        # Calculate contour area
+        area = cv2.contourArea(contour)
+
+        # Approximate contour to a polygon
+        perimeter = cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, 0.02 * perimeter, True)
+
+        # Check if contour is approximately rectangular and has certain area
+        if len(approx) > 4 and area > 1000:
+            # Draw contours on the frame
+            cv2.drawContours(img, [contour], -1, (0, 255, 0), 2)
+            lengths.append(approx)
+
+    cv2.imshow('Image with contours', img)
+
+    # Crop the image to the region of the maze
+    min_x = 10000
+    max_x = 0
+    min_y = 10000
+    max_y = 0
+    for contour in lengths:
+        for point in contour:
+            x = point[0][0]
+            y = point[0][1]
+            if x < min_x:
+                min_x = x
+            if x > max_x:
+                max_x = x
+            if y < min_y:
+                min_y = y
+            if y > max_y:
+                max_y = y
+
+    # Crop the image
+    img = img[min_y:max_y, min_x:max_x]
+
+    # Set non-white pixels to black
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            if not all(channel > 240 for channel in img[i][j]):
+                img[i][j] = [0, 0, 0]
+
+    # Set the first and last 5 columns to black
+    for i in range(img.shape[0]):
+        for j in range(5):
+            img[i][j] = [0, 0, 0]
+            img[i][img.shape[1] - 1 - j] = [0, 0, 0]
+
+    # Display the cropped image
+    cv2.imshow('Cropped Image', img)
+    cv2.waitKey(0)
+
+    # Save the cropped image
+    cv2.imwrite(output_image, img)
+
+remove_maze_border("paper_image.png", "cropped_maze.png")
