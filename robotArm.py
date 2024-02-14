@@ -67,6 +67,28 @@ class RobotArm(Controller):
         self.claw["Position"] = position
         time.sleep(0.5)
 
+    def setArticulation(self, articulation, position, wait=False):
+        """
+        Moves the specified articulation to the specified position.
+            inputs: articulation (int) - the articulation number to move
+            inputs: position (int) - the position to move the articulation to
+            inputs: wait (bool) - whether or not to wait for the arm to reach the position
+            result: moves the articulation to the specified position (saves the position in the articulation's 
+                dictionary)
+        """
+        if articulation == 1:
+            self.setArt1(position, wait=wait)
+        elif articulation == 2:
+            self.setArt2(position, wait=wait)
+        elif articulation == 3:
+            self.setArt3(position, wait=wait)
+        elif articulation == 4:
+            self.setArt4(position, wait=wait)
+        elif articulation == 5:
+            self.setArt5(position, wait=wait)
+        else:
+            print("Invalid articulation number. Please enter a number between 1 and 5.")
+
     def savePositionSettings(self):
         """
         Saves the current positions of the arm's articulations to a file called saved_positions.json
