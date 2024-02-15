@@ -61,3 +61,23 @@ Additional Files:
     https://youtu.be/ym5JK1RDq7U 
 - test_functions.py: A file to test the functionality of the robotArm class. This file is not
     necessary for the robotArm class to function
+
+Simon Says:
+- have the arm execute commands if simon says to do so.
+- Arm will home on class initialization
+- Arm executes command if simon says to do so, with a random number deciding if the arm will behave properly or not.
+- commands: 
+    - "quit": quits the game
+    - "simon says __": simon says to do something
+        - "move articulation # to position #": move the arm to a position given by the user (500-2500)
+        - "say __": have the robot arm speak something
+        - "wave": have the robot arm wave
+        - "home arm": have the robot arm move to the home position
+        - "set saved position __": load a saved position into the arm
+
+examples:
+- "simon says move articulation one to position 750"
+- "simon says say hello"
+- "simon says wave"
+- "simon says home arm"
+- "move articulation one to position 1500"

@@ -16,7 +16,7 @@ class SimonSays:
             return
         self.arm.home_arm()
 
-    def parse_input(input_string):
+    def parse_input(self, input_string):
         # split the input into words
         words = input_string.split()
 
@@ -29,20 +29,28 @@ class SimonSays:
         return significant_words
     
     def execute_input(self, user_input):
+        failed = False
+
         # Parse the input
         significant_words = self.parse_input(user_input)
 
         # if the first two words are "simon says", follow them -> random amount of mess ups
         if significant_words[:2] == ["simon", "says"]:
-            if random.random() < MISTAKE_THRESHOLD: # chance of not executing when it should INTENTIONAL
+            if random.random() < 0.01: # chance of not executing when it should INTENTIONAL
                 print("I never heard you say simon says! I'm not going to do that.")
-                return
+                print("You win! I made a mistake!")
+                failed = True
+                return -1
             else:
                 significant_words = significant_words[2:]
         else:
             if random.random() < (1 - MISTAKE_THRESHOLD): # chance of executing when it shouldn't INTENTIONAL
                 print("I only do what Simon says. I'm not going to do that.")
                 return
+            else:
+                # failed but execute action
+                failed = True
+                
 
         # Execute the command
         if "move" in significant_words:
@@ -58,22 +66,31 @@ class SimonSays:
         else:
             print("I'm sorry, I don't understand that command.")
 
+        if failed:
+            print("You win! I made a mistake!")
+            return -1
+
+        return 0
+
     def _word_to_number(self, word):
         word_to_number_dict = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
                             "six": 6, "seven": 7, "eight": 8, "nine": 9, "zero": 0}
         return word_to_number_dict.get(word.lower())
 
     def move_arm(self, significant_words):
+        print(significant_words)
+
         # find the proper articulation number
         articulation_number = significant_words[significant_words.index("articulation") + 1]
         articulation_number = self._word_to_number(articulation_number)
         
         # find the proper position number
         position_number = significant_words[significant_words.index("position") + 1]
-        position_number = self._word_to_number(position_number)
+
+        print("Moving arm to articulation " + str(articulation_number) + " position " + str(position_number))
 
         # move the arm
-        self.arm.setArticulation(articulation_number, position_number)
+        self.arm.setArticulation(int(articulation_number), int(position_number))
 
     def say_something(self, significant_words):
         # find the proper phrase
@@ -104,7 +121,9 @@ class SimonSays:
             user_input = input("What should I do? ")
             if user_input.lower() == "quit":
                 break
-            self.execute_input(user_input)
+            result = self.execute_input(user_input)
+            if result == -1:
+                break
 
         # end game
         print("Thanks for playing Simon Says with me! I hope you had fun as well!")
