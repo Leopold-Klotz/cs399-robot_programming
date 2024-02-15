@@ -6,16 +6,12 @@ Ideas:
 - Create a child class of map which represents an internal map for the arm. it should store the location of the arm (cell) or store "outside" if the arm is outside the map.
 
 
-Simon Says:
-- have the arm execute commands if simon says to do so.
-- Arm will home on class initialization
-- Arm executes command if simon says to do so, with a random number deciding if the arm will behave properly or not.
-- commands: 
-    - "quit": quits the game
-    - "simon says __": simon says to do something
-        - "move articulation # to position #": move the arm to a position given by the user (500-2500)
-        - "say __": have the robot arm speak something
-        - "wave": have the robot arm wave
-        - "home arm": have the robot arm move to the home position
-        - "set saved position __": load a saved position into the arm
-
+Speech Recognition:
+- Code taken from this tutorial: https://deepgram.com/learn/python-speech-recognition-locally-torchaudio
+- For MacOS:
+    - ffmpeg -g avfoundation -list_devices true -i dummy # to list all available devices
+    - StreamReader(src = ":1", format = "avfoundation") # to use the device with index 1 ("macbook pro microphone")
+- For Windows:
+    - ffmpeg -f dshow -list_devices true -i dummy # to list all available devices
+    - StreamReader(src = "audio=@device_cm_{33D9A762-90C8-11D0-BD43-00A0C911CE86}\wave_{BF2B8AE1-10B8-4CA4-A0DC-D02E18A56177}", format = "dshow") # to use the device with the name "Microphone (Realtek Audio)" (alternative name)
+- Not currently fully functional.
