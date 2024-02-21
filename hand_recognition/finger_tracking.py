@@ -1,3 +1,8 @@
+"""
+Author: Leopold Klotz
+Use this to control the LeArm with your hands. Uses handtracking from mediapipe (Google) and finger counting from cvzone.
+"""
+
 import cv2 
 from hand_tracking import HandDetector 
 
@@ -67,6 +72,24 @@ def calibrate_distances():
         cv2.waitKey(1)
     return {"min": min_avg, "max": max_avg}
 
+def recognize_digit(fingers):
+    """
+    Function: Will return number based on finger list. 0-9 on one hand
+    input: fingers: [thumb, pointer, middle, ring, pinky] 0|1 down or up
+    """
+    if fingers[0]: # thumb up
+        if sum(fingers) == 5:
+            return 5
+        else:
+            return sum(fingers) + 5
+    else: # thumb down
+        return sum(fingers [1:])
+    
+def control_Learm(armObject):
+    """
+    Function: Runs hand recognition
+    """
+
 def main():
     # Initialize the webcam to capture video
     # The '2' indicates the third camera connected to your computer; '0' would usually refer to the built-in camera
@@ -108,6 +131,8 @@ def main():
                 length, info, img = detector.findDistance(lmList1[8][0:2], lmList1[12][0:2], img, color=(255, 0, 255),
                                                             scale=10)
                 print(f'Length = {length}', end=" ")
+
+                print("digit represented: ", recognize_digit(fingers1), end=" ")
                 
 
             # Check if a second hand is detected
@@ -137,6 +162,6 @@ def main():
         cv2.waitKey(1)
 
 if __name__ == "__main__":
-    # main()
-    print("Calibrating distances... Use Right hand to calibrate.")
-    print(calibrate_distances())
+    main()
+    # print("Calibrating distances... Use Right hand to calibrate.")
+    # print(calibrate_distances())

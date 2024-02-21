@@ -3,6 +3,7 @@
 import time
 import random
 from robotArm import RobotArm
+from hand_recognition.finger_tracking import calibrate_distances, recognize_digit
 
 MISTAKE_THRESHOLD = 0.2
 
@@ -15,6 +16,8 @@ class SimonSays:
             print("Could not connect to the robot arm. Please check the connection and try again.")
             return
         self.arm.home_arm()
+
+        self.hand_distances = None
 
     def parse_input(self, input_string):
         # split the input into words
@@ -110,6 +113,28 @@ class SimonSays:
         
         # go to the saved position
         self.arm.loadPositionSettings(position_name)
+
+    def calibrate(self):
+        # calibrate the distances for hand control
+        print("Launching calibrating distances for hand control...")
+        limits = calibrate_distances(self.arm)
+        print("Calibration complete!")
+        print("Limits: ", limits)
+        self.hand_distances = limits
+
+    def _distance_to_position(self, distance, limits):
+        if (self.hand_distances == None):
+            print("Hand distances not calibrated. Please calibrate the hand distances first.")
+
+        # return the position of the arm based on the distance
+        # lower bound of position is 500, upper bound is 2500
+        return int((distance - self.hand_distances[0]) / (self.hand_distances[1] - self.hand_distances[0]) * (2500 - 500) + 500)
+    
+    def hand_control(self):
+        """
+        Function: responsible for monitoring 
+        """
+
 
     def play_game(self):
         # start game
