@@ -2,3 +2,5 @@ pyttsx3
 opencv-python
 numpy
 hidapi
+
+mediapipe

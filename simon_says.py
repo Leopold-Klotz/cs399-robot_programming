@@ -166,7 +166,7 @@ class SimonSays:
         articulation = []
         position = []
 
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(0) 
         detector = HandDetector(staticMode=False, maxHands=2, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
 
         while continue_control and (time.time() - start_time) < HANDTRACKING_LIMIT:
@@ -253,7 +253,7 @@ class SimonSays:
                 hand1 = hands[0]
                 lmList1 = hand1["lmList"]
                 length, info, img = detector.findDistance(lmList1[CONTROL_LANDMARKS[0]][0:2], lmList1[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 255), scale=10)
-                # display the distane on the image
+                # display the distance on the image
 
                 print(f'Length = {length}, Distance = {self._distance_to_position(length, self.hand_distances)}')
             cv2.imshow("Image", img)
