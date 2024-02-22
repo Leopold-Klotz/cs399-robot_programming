@@ -9,8 +9,8 @@ from hand_recognition.hand_tracking import HandDetector
 
 MISTAKE_THRESHOLD = 0.2
 HANDTRACKING_LIMIT = 45 # 45 seconds of hand control
-CONTROL_LANDMARKS = [8, 12]  # landmarks for the tip of the pointer and middle finger (change to thumb?)
-
+CONTROL_LANDMARKS = [8, 4]  # landmarks for the tip of the pointer and thumb (change to thumb?)
+COMMAND_HOLD_MS = 5
 
 class SimonSays:
     def __init__(self, port):
@@ -21,7 +21,7 @@ class SimonSays:
             return
         self.arm.home_arm()
 
-        self.hand_distances = None
+        self.hand_distances = {'min': 30.305397485707655, 'max': 198.38702541542978}
 
     def parse_input(self, input_string):
         # split the input into words
@@ -87,6 +87,11 @@ class SimonSays:
         word_to_number_dict = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
                             "six": 6, "seven": 7, "eight": 8, "nine": 9, "zero": 0}
         return word_to_number_dict.get(word.lower())
+    
+    def num_to_string(self, num):
+        number_to_word_dict = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
+                            6: "six", 7: "seven", 8: "eight", 9: "nine", 0: "zero"}
+        return number_to_word_dict.get(num)
 
     def move_arm(self, significant_words):
         print(significant_words)
@@ -125,19 +130,29 @@ class SimonSays:
     def calibrate(self):
         # calibrate the distances for hand control
         print("Launching calibrating distances for hand control...")
-        limits = calibrate_distances(self.arm)
+        limits = calibrate_distances()
         print("Calibration complete!")
         print("Limits: ", limits)
         self.hand_distances = limits
 
-    def _distance_to_position(self, distance, limits):
+    def _distance_to_position(self, live_distance, limits):
         if (self.hand_distances == None):
             print("Hand distances not calibrated. Please calibrate the hand distances first.")
+            return 1500
 
         # return the position of the arm based on the distance
         # lower bound of position is 500, upper bound is 2500
-        return int((distance - self.hand_distances[0]) / (self.hand_distances[1] - self.hand_distances[0]) * (2500 - 500) + 500)
-    
+        scaled_live_distance = (live_distance - limits["min"]) / (limits["max"] - limits["min"])
+        scaled_servo_value = int(scaled_live_distance * (2500 - 500) + 500)
+
+        # make sure the value is within the bounds
+        if scaled_servo_value < 500:
+            scaled_servo_value = 500
+        elif scaled_servo_value > 2500:
+            scaled_servo_value = 2500
+
+        return scaled_servo_value
+        
     def hand_control(self):
         """
         Function: tracks the left and right hand to send commands to the robot arm. 
@@ -151,10 +166,11 @@ class SimonSays:
         articulation = []
         position = []
 
+        cap = cv2.VideoCapture(0)
+        detector = HandDetector(staticMode=False, maxHands=2, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
+
         while continue_control and (time.time() - start_time) < HANDTRACKING_LIMIT:
             # Sensor Update
-            cap = cv2.VideoCapture(0)
-            detector = HandDetector(staticMode=False, maxHands=2, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
             success, img = cap.read()
             hands, img = detector.findHands(img, draw=True, flipType=True)
             if hands:
@@ -164,15 +180,18 @@ class SimonSays:
                     hand2 = hands[1]
                     if (recognize_digit(detector.fingersUp(hand1)) == 0) and (recognize_digit(detector.fingersUp(hand2)) == 0):
                         activate = True
+                        time.sleep(1) # wait for 1 second to avoid multiple activations
                 if activate:
                     hand1 = hands[0]
                     hand2 = hands[1]
                     if hand1["type"] == "Left":
+                        print("Left hand controls articulation", end=" ")
                         articulation.append(recognize_digit(detector.fingersUp(hand1))) # add to articulation avg list
                         lmList = hand2["lmList"]
                         length, info, img = detector.findDistance(lmList[CONTROL_LANDMARKS[0]][0:2], lmList[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 255), scale=10)
                         position.append(length) # add to position avg list
                     else:
+                        print("Right hand controls position", end=" ")
                         articulation.append(recognize_digit(detector.fingersUp(hand2)))
                         lmList = hand1["lmList"]
                         length, info, img = detector.findDistance(lmList[CONTROL_LANDMARKS[0]][0:2], lmList[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 255), scale=10)
@@ -180,15 +199,25 @@ class SimonSays:
                     if (recognize_digit(detector.fingersUp(hand1)) == 5) and (recognize_digit(detector.fingersUp(hand2)) == 5):
                         continue_control = False
                         activate = False
-            
+
+            articulation = [x for x in articulation if x != 0]
+            position = [x for x in position if x != 0]
+            # print("length of articulation: ", len(articulation), end=" ")
+            # print("length of position: ", len(position), end="")
+            # print(" ")  # New line for better readability of the printed output
+
             # Motion Update
-            if len(articulation) == 10:
-                # remove any zeros 
-                articulation = [x for x in articulation if x != 0]
+            if len(articulation) >= COMMAND_HOLD_MS and len(position) >= COMMAND_HOLD_MS:
+                print(" ")  # New line for better readability of the printed output
+                print("Sending command to robot arm")
+                print("articulation: ", articulation)
+                print("position", position)
                 avg_articulation = sum(articulation) / len(articulation)
                 avg_position = sum(position) / len(position)
-                self.arm.setArticulation(round(avg_articulation), round(self._distance_to_position(avg_position, self.hand_distances)))
-                print(f"Articulation: {round(avg_articulation)} Position: {round(self._distance_to_position(avg_position, self.hand_distances))}")
+                art = round(avg_articulation)
+                pos = round(self._distance_to_position(avg_position, self.hand_distances))
+                print (f"Articulation: {art} Position: {pos}")
+                self.arm.setArticulation(art, pos)
                 articulation = []
                 position = []
 
@@ -214,8 +243,39 @@ class SimonSays:
         # end game
         print("Thanks for playing Simon Says with me! I hope you had fun as well!")
 
+    def monitor_distances_loop(self):
+        cap = cv2.VideoCapture(0)
+        detector = HandDetector(staticMode=False, maxHands=1, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
+        while True:
+            success, img = cap.read()
+            hands, img = detector.findHands(img, draw=True, flipType=True)
+            if hands:
+                hand1 = hands[0]
+                lmList1 = hand1["lmList"]
+                length, info, img = detector.findDistance(lmList1[CONTROL_LANDMARKS[0]][0:2], lmList1[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 255), scale=10)
+                # display the distane on the image
+
+                print(f'Length = {length}, Distance = {self._distance_to_position(length, self.hand_distances)}')
+            cv2.imshow("Image", img)
+            cv2.waitKey(1)
+
+    def monitor_digit_loop(self):
+        cap = cv2.VideoCapture(0)
+        detector = HandDetector(staticMode=False, maxHands=1, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
+        while True:
+            success, img = cap.read()
+            hands, img = detector.findHands(img, draw=True, flipType=True)
+            if hands:
+                hand1 = hands[0]
+                fingers = recognize_digit(detector.fingersUp(hand1))
+                print(f'Recognized Number = {fingers}')
+            cv2.imshow("Image", img)
+            cv2.waitKey(1)
+            
+
 
 if __name__ == "__main__":
     simon_says = SimonSays("USB")
     simon_says.play_game()
-
+    # simon_says.monitor_distances_loop()
+    # simon_says.monitor_digit_loop()

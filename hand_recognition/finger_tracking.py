@@ -4,9 +4,9 @@ Use this to control the LeArm with your hands. Uses handtracking from mediapipe 
 """
 
 import cv2 
-from hand_tracking import HandDetector 
+from hand_recognition.hand_tracking import HandDetector 
 
-CONTROL_LANDMARKS = [8, 12]  # landmarks for the tip of the pointer and middle finger (change to thumb?)
+CONTROL_LANDMARKS = [8, 4]  # landmarks for the tip of the pointer and middle finger (change to thumb?)
 
 
 def calibrate_distances():
@@ -60,7 +60,7 @@ def calibrate_distances():
                     print("Please hold maximum distance for 5 seconds: ", end=" ")
 
                     # Calculate distance between specific landmarks on the first hand and draw it on the image
-                    length, info, img = detector.findDistance(lmList1[8][0:2], lmList1[12][0:2], img, color=(255, 0, 255),
+                    length, info, img = detector.findDistance(lmList1[CONTROL_LANDMARKS[0]][0:2], lmList1[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 255),
                                                                 scale=10)
                     print(f'Length = {length}', end=" ")
                     max_distance.append(length)
@@ -131,7 +131,7 @@ def main():
                 print(f'H1 = {fingers1.count(1)}', end=" ")  # Print the count of fingers that are up
 
                 # Calculate distance between specific landmarks on the first hand and draw it on the image
-                length, info, img = detector.findDistance(lmList1[8][0:2], lmList1[12][0:2], img, color=(255, 0, 255),
+                length, info, img = detector.findDistance(lmList1[CONTROL_LANDMARKS[0]][0:2], lmList1[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 255),
                                                             scale=10)
                 print(f'Length = {length}', end=" ")
 
@@ -153,7 +153,7 @@ def main():
 
                 # Calculate distance between the index fingers of both hands and draw it on the image
                 # landmark list: https://developers.google.com/mediapipe/solutions/vision/hand_landmarker#models
-                length, info, img = detector.findDistance(lmList1[8][0:2], lmList2[8][0:2], img, color=(255, 0, 0),
+                length, info, img = detector.findDistance(lmList1[CONTROL_LANDMARKS[0]][0:2], lmList2[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 0),
                                                             scale=10)
 
             print(" ")  # New line for better readability of the printed output
