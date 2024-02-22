@@ -4,8 +4,12 @@ import time
 import random
 from robotArm import RobotArm
 from hand_recognition.finger_tracking import calibrate_distances, recognize_digit
+import cv2
+from hand_recognition.hand_tracking import HandDetector
 
 MISTAKE_THRESHOLD = 0.2
+HANDTRACKING_LIMIT = 45 # 45 seconds of hand control
+CONTROL_LANDMARKS = [8, 12]  # landmarks for the tip of the pointer and middle finger (change to thumb?)
 
 
 class SimonSays:
@@ -132,8 +136,44 @@ class SimonSays:
     
     def hand_control(self):
         """
-        Function: responsible for monitoring 
+        Function: responsible for monitoring ... thread? spawn control thread and leave it open for 10-20 seconds
         """
+        start_time = time.time()
+        activate = False
+        continue_control = True
+        articulation = []
+        position = []
+
+        while continue_control and (time.time() - start_time) < HANDTRACKING_LIMIT:
+            # Sensor Update
+            cap = cv2.VideoCapture(0)
+            detector = HandDetector(staticMode=False, maxHands=2, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
+            success, img = cap.read()
+            hands, img = detector.findHands(img, draw=True, flipType=True)
+            if hands:
+                if (len(hands) > 1):
+                    hand1 = hands[0]
+                    hand2 = hands[1]
+                    if (recognize_digit(detector.fingersUp(hand1)) == 0) and (recognize_digit(detector.fingersUp(hand2)) == 0):
+                        activate = True
+                if activate:
+                    hand1 = hands[0]
+                    hand2 = hands[1]
+                    if hand1["type"] == "Left":
+                        articulation.append(recognize_digit(detector.fingersUp(hand1))) # add to articulation avg list
+                        lmList = hand2["lmList"]
+                        length, info, img = detector.findDistance(lmList[CONTROL_LANDMARKS[0]][0:2], lmList[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 255), scale=10)
+                        position.append(length) # add to position avg list
+                    else:
+                        articulation.append(recognize_digit(detector.fingersUp(hand2)))
+                        lmList = hand1["lmList"]
+                        length, info, img = detector.findDistance(lmList[CONTROL_LANDMARKS[0]][0:2], lmList[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 255), scale=10)
+                        position.append(length)
+                    if (recognize_digit(detector.fingersUp(hand1)) == 5) and (recognize_digit(detector.fingersUp(hand2)) == 5):
+                        continue_control = False
+            # Motion Update
+            # send command to robot arm avg over 5 seconds
+
 
 
     def play_game(self):

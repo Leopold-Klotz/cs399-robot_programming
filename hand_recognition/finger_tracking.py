@@ -6,6 +6,9 @@ Use this to control the LeArm with your hands. Uses handtracking from mediapipe 
 import cv2 
 from hand_tracking import HandDetector 
 
+CONTROL_LANDMARKS = [8, 12]  # landmarks for the tip of the pointer and middle finger (change to thumb?)
+
+
 def calibrate_distances():
     """
     This function is used to calibrate the distances between the pointer and middle figure to set a 
@@ -45,7 +48,7 @@ def calibrate_distances():
                     print("Please hold minimum distance for 5 seconds: ", end=" ")
 
                     # Calculate distance between specific landmarks on the first hand and draw it on the image
-                    length, info, img = detector.findDistance(lmList1[8][0:2], lmList1[12][0:2], img, color=(255, 0, 255),
+                    length, info, img = detector.findDistance(lmList1[CONTROL_LANDMARKS[0]][0:2], lmList1[CONTROL_LANDMARKS[1]][0:2], img, color=(255, 0, 255),
                                                                 scale=10)
                     print(f'Length = {length}', end=" ")
                     min_distance.append(length)
