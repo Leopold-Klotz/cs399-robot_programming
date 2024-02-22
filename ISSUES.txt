@@ -6,6 +6,7 @@ Ideas:
 - Create a child class of map which represents an internal map for the arm. it should store the location of the arm (cell) or store "outside" if the arm is outside the map.
 
 
+<<<<<<< HEAD
 Speech Recognition:
 - Code taken from this tutorial: https://deepgram.com/learn/python-speech-recognition-locally-torchaudio
 - For MacOS:
@@ -15,3 +16,7 @@ Speech Recognition:
     - ffmpeg -f dshow -list_devices true -i dummy # to list all available devices
     - StreamReader(src = "audio=@device_cm_{33D9A762-90C8-11D0-BD43-00A0C911CE86}\wave_{BF2B8AE1-10B8-4CA4-A0DC-D02E18A56177}", format = "dshow") # to use the device with the name "Microphone (Realtek Audio)" (alternative name)
 - Not currently fully functional.
+=======
+
+
+>>>>>>> 9fcc85434fb4310deb6a90c08b58fe69526aec69
