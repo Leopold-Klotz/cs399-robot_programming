@@ -181,7 +181,7 @@ class SimonSays:
                     if (recognize_digit(detector.fingersUp(hand1)) == 0) and (recognize_digit(detector.fingersUp(hand2)) == 0):
                         activate = True
                         time.sleep(1) # wait for 1 second to avoid multiple activations
-                if activate:
+                if activate and (len(hands) > 1):
                     hand1 = hands[0]
                     hand2 = hands[1]
                     if hand1["type"] == "Left":
