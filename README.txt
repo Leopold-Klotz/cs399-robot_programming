@@ -88,6 +88,7 @@ examples:
 Hand Tracking Addition:
 Requirements:
 - pip install openCV-python, mediapipe
+hand landmarking model: https://developers.google.com/mediapipe/solutions/vision/hand_landmarker#get_started
 
     The program utilizes Googles mediapipe library to track the hand and control the robot arm.
     The finger regcognition was first implemented by Computer Vision Zone, but adjusted

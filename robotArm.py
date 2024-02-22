@@ -86,8 +86,12 @@ class RobotArm(Controller):
             self.setArt4(position, wait=wait)
         elif articulation == 5:
             self.setArt5(position, wait=wait)
+        elif articulation == 6:
+            # flip position for claw 500= open, 2500 = closed
+            position = 3000 - position
+            self.setClaw(int(position), wait=wait)
         else:
-            print("Invalid articulation number. Please enter a number between 1 and 5.")
+            print("Invalid articulation number. Please enter a number between 1 and 6.")
 
     def savePositionSettings(self):
         """
@@ -136,6 +140,7 @@ class RobotArm(Controller):
                 self.setArt3(positions.get("Art3", 0), wait=False)
                 self.setArt4(positions.get("Art4", 0), wait=False)
                 self.setArt5(positions.get("Art5", 0), wait=False)
+                self.setClaw(positions.get("Claw", 0), wait=False)
                 claw_position = positions.get("Claw")
                 if claw_position is not None:
                     self.setClaw(claw_position, wait=False)
