@@ -70,6 +70,10 @@ class SimonSays:
             self.arm.home_arm()
         elif ("set" in significant_words) and ("saved" in significant_words) and ("position" in significant_words):
             self.go_to_saved_position(significant_words)
+        elif "calibrate" in significant_words:
+            self.calibrate()
+        elif "hand" in significant_words and "control" in significant_words:
+            self.hand_control()
         else:
             print("I'm sorry, I don't understand that command.")
 
@@ -136,7 +140,10 @@ class SimonSays:
     
     def hand_control(self):
         """
-        Function: responsible for monitoring ... thread? spawn control thread and leave it open for 10-20 seconds
+        Function: tracks the left and right hand to send commands to the robot arm. 
+        The left hand controls the articulation and the right hand controls the position.
+        The user must hold both hands in a fist to activate the control and open both 
+        hands to deactivate it.
         """
         start_time = time.time()
         activate = False
@@ -151,7 +158,8 @@ class SimonSays:
             success, img = cap.read()
             hands, img = detector.findHands(img, draw=True, flipType=True)
             if hands:
-                if (len(hands) > 1):
+                # activate if both hands are in a fist
+                if (len(hands) > 1): 
                     hand1 = hands[0]
                     hand2 = hands[1]
                     if (recognize_digit(detector.fingersUp(hand1)) == 0) and (recognize_digit(detector.fingersUp(hand2)) == 0):
@@ -171,9 +179,22 @@ class SimonSays:
                         position.append(length)
                     if (recognize_digit(detector.fingersUp(hand1)) == 5) and (recognize_digit(detector.fingersUp(hand2)) == 5):
                         continue_control = False
+                        activate = False
+            
             # Motion Update
-            # send command to robot arm avg over 5 seconds
+            if len(articulation) == 10:
+                # remove any zeros 
+                articulation = [x for x in articulation if x != 0]
+                avg_articulation = sum(articulation) / len(articulation)
+                avg_position = sum(position) / len(position)
+                self.arm.setArticulation(round(avg_articulation), round(self._distance_to_position(avg_position, self.hand_distances)))
+                print(f"Articulation: {round(avg_articulation)} Position: {round(self._distance_to_position(avg_position, self.hand_distances))}")
+                articulation = []
+                position = []
 
+            # Display the image in a window
+            cv2.imshow("Image", img)
+            cv2.waitKey(1) # wait for 1 millisecond between frames
 
 
     def play_game(self):

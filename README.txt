@@ -74,6 +74,8 @@ Simon Says:
         - "wave": have the robot arm wave
         - "home arm": have the robot arm move to the home position
         - "set saved position __": load a saved position into the arm
+        - "calibrate": calibrates the arm's hand tracking control
+        - "hand control": control the arm with hand tracking
 
 examples:
 - "simon says move articulation one to position 750"
@@ -81,3 +83,23 @@ examples:
 - "simon says wave"
 - "simon says home arm"
 - "move articulation one to position 1500"
+
+
+Hand Tracking Addition:
+Requirements:
+- pip install openCV-python, mediapipe
+
+    The program utilizes Googles mediapipe library to track the hand and control the robot arm.
+    The finger regcognition was first implemented by Computer Vision Zone, but adjusted
+    to suit my needs. The hand tracking is used to control the robot arm. The user can hold up their
+    left hand with the articulation number they want to control, and the right hand to control the
+    servo with a pinching motion. Two fists should start the hand tracking control, and two open 
+    hands should stop it. There is also a timeout feature that will stop the hand tracking after 
+    a certain amount of time. 
+
+    Additionally a calibration step was added to threshold the distance between the pointer
+    and thumb on the right hand. This was thresholded to the servo range of 500-2500. 
+    Import functions to use hand tracking in game specific scenario.
+Files: 
+- hand_tracking.py: Hand detector class from Computer Vision Zone using mediapipe model.
+- finger_tracking.py: Adjustments to better apply the tracking. 
