@@ -23,6 +23,7 @@ class Sentry:
 
         self.hand_distances = {'min': 30.305397485707655, 'max': 198.38702541542978}
         self.holding_object = False
+        self.inbound_region = None
 
     def parse_input(self, input_string):
         # split the input into words
@@ -243,14 +244,15 @@ class Sentry:
         # open the claw
         self.arm.setClaw(1500)
         time.sleep(1)
-        self.arm.loadPostionSettings("sentry_monitor")
+        self.arm.loadPositionSettings("sentry_monitor")
         time.sleep(1)
-
 
     def monitor(self):
         # looping behavior state, sentry mode or target acquired
         print("Monitor Booting...")
         time.sleep(1)
+
+        target_lines = cv2.imread("lines_image.jpg")
 
         # keep looking for image
         cap = cv2.VideoCapture(0)
@@ -271,9 +273,27 @@ class Sentry:
             # resize image
             resized_frame = cv2.resize(rotated_frame, (800, 800))
 
-            cv2.imshow('Live', resized_frame)
+            #overlay the lines image onto the resized frame
+            combined_frame = cv2.addWeighted(resized_frame, 1, target_lines, 0.5, 0)
+
+            cv2.imshow('Live', combined_frame)
+
+            key = cv2.waitKey(1)
+
+            if key == 13: # ascii for enter key
+                # pick up the object
+                print("grabbing object")
+                self.grab_object()
+                print("object grabbed")
+
+            if key == ord('d') and self.holding_object:
+                # drop the object
+                print("dropping object")
+                self.drop_object()
+                print("object dropped")
+
             
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            if key & 0xFF == ord('q'):
                 break
         
         cap.release()
