@@ -282,6 +282,9 @@ class Sentry:
         # send arm to monitoring position
         self.arm.loadPositionSettings("sentry_monitor")
 
+        # time the object is in the inbound region
+        inbound_time = 0
+
         print("Press Enter to grab object, 'd' to drop object, and 'q' to quit.")
         
         while True:
@@ -323,14 +326,16 @@ class Sentry:
             if keypoints:
                 if (x - target_location["x"])**2 + (y - target_location["y"])**2 < target_location["radius"]**2:
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
+                    inbound_time += 1
                 else:
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 0, 255), 5)
+                    inbound_time = 0
 
             cv2.imshow('Live', frame)
 
             key = cv2.waitKey(1)
 
-            if key == 13: # ascii for enter key
+            if inbound_time > COMMAND_HOLD_MS * 100: # 5 seconds -> command hold time from ms to s
                 # pick up the object
                 print("grabbing object")
                 self.grab_object()
