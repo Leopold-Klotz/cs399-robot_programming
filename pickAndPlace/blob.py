@@ -287,6 +287,7 @@ if __name__=="__main__":
             draw_keypoints(frame, keypoints, imshow=True)
 
             print("Keypoints: ", keypoints, end='\r')
+            print(" ")
             print("keypoint coordinates: ", keypoints[0].pt, end='\r')
 
             #-- press q to quit
