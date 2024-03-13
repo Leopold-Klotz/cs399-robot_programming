@@ -112,6 +112,12 @@ def blob_detect(image,                  #-- The frame (cv standard)
         
     keypoints = detector.detect(reversemask)
 
+    if imshow:
+        # Show keypoints
+        im_with_keypoints = cv2.drawKeypoints(image, keypoints, np.array([]), (0,0,255), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        cv2.imshow("Keypoints 1", im_with_keypoints)
+        cv2.waitKey(0)
+
     return keypoints, reversemask
 
 #---------- Draw detected blobs: returns the image
