@@ -276,6 +276,7 @@ if __name__=="__main__":
 
             # rotate frame 90 degrees cw
             frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+            frame = cv2.resize(frame, (800, 800))
             
             #-- Detect keypoints
             keypoints, _ = blob_detect(frame, blue_min, blue_max, blur=10, 
@@ -286,8 +287,6 @@ if __name__=="__main__":
             #-- click ENTER on the image window to proceed
             draw_keypoints(frame, keypoints, imshow=True)
 
-            print("Keypoints: ", keypoints, end='\r')
-            print(" ")
             print("keypoint coordinates: ", keypoints[0].pt, end='\r')
 
             #-- press q to quit
