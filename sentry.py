@@ -314,7 +314,7 @@ class Sentry:
                 # Display the keypoint coordinates on top of the image
                 x, y = keypoints[0].pt
                 cv2.putText(frame, f"Keypoint: ({x}, {y})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                cv2.circle(frame, (int(x), int(y)), 5, (0, 255, 0), -1)
+                cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
             ## end blob detection
 
             # overlay the lines image onto the resized frame
