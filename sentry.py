@@ -319,8 +319,8 @@ class Sentry:
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
             ## end blob detection
                 
-            # draw target circle
-            cv2.circle(frame, (400, 400), 10, (0, 255, 0), -1)
+            # draw hollow circle
+            cv2.circle(frame, (400, 400), 50, (0, 255, 0), 5)
 
             # overlay the lines image onto the resized frame
             combined_frame = cv2.addWeighted(frame, 1, target_lines, 0.5, 0)
