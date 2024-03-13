@@ -243,7 +243,7 @@ if __name__=="__main__":
     blue_max = (169, 255, 255) 
     
     #--- Define area limit [x_min, y_min, x_max, y_max] adimensional (0.0 to 1.0) starting from top left corner
-    window = [0.1, 0.1, 0.9, 0.75]
+    window = [0.1, 0.75, 0.9, 0.1]
     
     #-- IMAGE_SOURCE: either 'camera' or 'imagelist'
     SOURCE = 'video'
