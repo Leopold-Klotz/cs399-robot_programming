@@ -276,8 +276,6 @@ class Sentry:
         blob_parameters.minInertiaRatio = 0.25
         ## end parameters for blob detection
 
-        target_lines = cv2.imread("lines_image.jpg")
-
         # keep looking for image
         cap = cv2.VideoCapture(0)
 
@@ -321,17 +319,14 @@ class Sentry:
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
             ## end blob detection
                 
-            # draw hollow circle
+            # draw target circle
             if keypoints:
                 if (x - target_location["x"])**2 + (y - target_location["y"])**2 < target_location["radius"]**2:
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
                 else:
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 0, 255), 5)
 
-            # overlay the lines image onto the resized frame
-            combined_frame = cv2.addWeighted(frame, 1, target_lines, 0.5, 0)
-
-            cv2.imshow('Live', combined_frame)
+            cv2.imshow('Live', frame)
 
             key = cv2.waitKey(1)
 
