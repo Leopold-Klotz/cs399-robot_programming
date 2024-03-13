@@ -260,7 +260,7 @@ if __name__=="__main__":
             
             #-- Detect keypoints
             keypoints, _ = blob_detect(frame, blue_min, blue_max, blur=3, 
-                                        blob_params=None, search_window=window, imshow=False)
+                                        blob_params=None, search_window=window, imshow=True)
             #-- Draw search window
             frame     = draw_window(frame, window)
 
