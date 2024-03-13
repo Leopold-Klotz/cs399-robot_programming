@@ -6,6 +6,7 @@ from robotArm import RobotArm
 from hand_recognition.finger_tracking import calibrate_distances, recognize_digit
 import cv2
 from hand_recognition.hand_tracking import HandDetector
+from pickAndPlace.blob import blob_detect, draw_window, draw_keypoints
 
 MISTAKE_THRESHOLD = 0.2
 HANDTRACKING_LIMIT = 45 # 45 seconds of hand control
@@ -252,6 +253,27 @@ class Sentry:
         print("Monitor Booting...")
         time.sleep(1)
 
+        ## parameters for blob detection
+        #--- Define HSV limits
+        blue_min = (22,79,127)
+        blue_max = (169, 255, 255) 
+        
+        #--- Define area limit [x_min, y_min, x_max, y_max] adimensional (0.0 to 1.0) starting from top left corner
+        window = [0.05, 0.25, 0.95, 0.95]
+        
+        blob_parameters = cv2.SimpleBlobDetector_Params()
+        blob_parameters.filterByArea = False
+        blob_parameters.minArea = 100
+        blob_parameters.maxArea = 1000
+        blob_parameters.filterByCircularity = True
+        blob_parameters.minCircularity = 0.5
+        blob_parameters.maxCircularity = 1.0
+        blob_parameters.filterByConvexity = True
+        blob_parameters.minConvexity = 0.5
+        blob_parameters.filterByInertia = True
+        blob_parameters.minInertiaRatio = 0.25
+        ## end parameters for blob detection
+
         target_lines = cv2.imread("lines_image.jpg")
 
         # keep looking for image
@@ -275,8 +297,24 @@ class Sentry:
             # resize image
             resized_frame = cv2.resize(rotated_frame, (800, 800))
 
-            #overlay the lines image onto the resized frame
-            combined_frame = cv2.addWeighted(resized_frame, 1, target_lines, 0.5, 0)
+            frame = resized_frame
+
+            ## blob detection
+            #-- Detect keypoints
+            keypoints, _ = blob_detect(frame, blue_min, blue_max, blur=10, 
+                                        blob_params=blob_parameters, search_window=window, imshow=False)
+            #-- Draw search window
+            frame     = draw_window(frame, window)
+
+            #-- click ENTER on the image window to proceed
+            draw_keypoints(frame, keypoints, imshow=True)
+
+            if keypoints:
+                print("keypoint coordinates: ", keypoints[0].pt, end='\r')
+            ## end blob detection
+
+            # overlay the lines image onto the resized frame
+            combined_frame = cv2.addWeighted(frame, 1, target_lines, 0.5, 0)
 
             cv2.imshow('Live', combined_frame)
 
