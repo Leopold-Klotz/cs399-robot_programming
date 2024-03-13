@@ -259,6 +259,8 @@ class Sentry:
 
         # send arm to monitoring position
         self.arm.loadPositionSettings("sentry_monitor")
+
+        print("Press Enter to grab object, 'd' to drop object, and 'q' to quit.")
         
         while True:
             ret, frame = cap.read()
