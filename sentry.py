@@ -310,14 +310,17 @@ class Sentry:
             draw_keypoints(frame, keypoints, imshow=False)
 
             if keypoints:
-                print("keypoint coordinates: ", keypoints[0].pt, end='\r')
                 # Display the keypoint coordinates on top of the image
                 x, y = keypoints[0].pt
                 x = int(x)
                 y = int(y)
+                print("keypoint coordinates: ", (x,y), end='\r')
                 cv2.putText(frame, f"Keypoint: ({x}, {y})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
             ## end blob detection
+                
+            # draw target circle
+            cv2.circle(frame, (400, 400), 10, (0, 255, 0), -1)
 
             # overlay the lines image onto the resized frame
             combined_frame = cv2.addWeighted(frame, 1, target_lines, 0.5, 0)
