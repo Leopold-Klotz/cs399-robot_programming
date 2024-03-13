@@ -103,4 +103,8 @@ hand landmarking model: https://developers.google.com/mediapipe/solutions/vision
     Import functions to use hand tracking in game specific scenario.
 Files: 
 - hand_tracking.py: Hand detector class from Computer Vision Zone using mediapipe model.
-- finger_tracking.py: Adjustments to better apply the tracking. 
+- finger_tracking.py: Adjustments to better apply the tracking.
+
+
+to connect to the robot over ssh must use x11 forwarding. use the command:
+- ssh -X robot@<addr> 
