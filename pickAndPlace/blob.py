@@ -279,12 +279,14 @@ if __name__=="__main__":
             
             #-- Detect keypoints
             keypoints, _ = blob_detect(frame, blue_min, blue_max, blur=10, 
-                                        blob_params=blob_parameters, search_window=window, imshow=True)
+                                        blob_params=blob_parameters, search_window=window, imshow=False)
             #-- Draw search window
             frame     = draw_window(frame, window)
 
             #-- click ENTER on the image window to proceed
             draw_keypoints(frame, keypoints, imshow=True)
+
+            print("Keypoints: ", keypoints)
 
             #-- press q to quit
             if cv2.waitKey(1) & 0xFF == ord('q'):
