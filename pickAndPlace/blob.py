@@ -265,7 +265,7 @@ if __name__=="__main__":
             frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
             
             #-- Detect keypoints
-            keypoints, _ = blob_detect(frame, blue_min, blue_max, blur=3, 
+            keypoints, _ = blob_detect(frame, blue_min, blue_max, blur=10, 
                                         blob_params=None, search_window=window, imshow=True)
             #-- Draw search window
             frame     = draw_window(frame, window)
