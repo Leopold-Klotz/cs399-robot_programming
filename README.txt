@@ -108,3 +108,5 @@ Files:
 
 to connect to the robot over ssh must use x11 forwarding. use the command:
 - ssh -X robot@<addr> 
+- <for me> connect with: ssh robot
+
