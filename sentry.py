@@ -307,7 +307,7 @@ class Sentry:
             frame     = draw_window(frame, window)
 
             #-- click ENTER on the image window to proceed
-            draw_keypoints(frame, keypoints, imshow=True)
+            draw_keypoints(frame, keypoints, imshow=False)
 
             if keypoints:
                 print("keypoint coordinates: ", keypoints[0].pt, end='\r')
