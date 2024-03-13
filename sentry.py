@@ -327,7 +327,7 @@ class Sentry:
                 if (x - target_location["x"])**2 + (y - target_location["y"])**2 < target_location["radius"]**2:
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
                     cv2.putText(frame, f"Inbound Time: {int(inbound_time/10)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    print(f"Inbound Time: {int(inbound_time)}", end='\r')
+                    print(f"Inbound Time: {int(inbound_time)}")
                     inbound_time += 1
                 else:
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 0, 255), 5)
