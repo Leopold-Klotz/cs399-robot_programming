@@ -326,7 +326,7 @@ class Sentry:
             if keypoints:
                 if (x - target_location["x"])**2 + (y - target_location["y"])**2 < target_location["radius"]**2:
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
-                    cv2.putText(frame, f"Inbound Time: {int(inbound_time/100)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    cv2.putText(frame, f"Inbound Time: {int(inbound_time/10)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                     print(f"Inbound Time: {int(inbound_time)}", end='\r')
                     inbound_time += 1
                 else:
@@ -337,7 +337,7 @@ class Sentry:
 
             key = cv2.waitKey(1)
 
-            if inbound_time > COMMAND_HOLD_MS * 100: # 5 seconds -> command hold time from ms to s
+            if inbound_time > COMMAND_HOLD_MS * 10: # 5 seconds -> command hold time from ms to s
                 # pick up the object
                 print("grabbing object")
                 self.grab_object()
