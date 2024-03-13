@@ -254,6 +254,8 @@ class Sentry:
         time.sleep(1)
 
         ## parameters for blob detection
+        target_location = {"x": 440, "y": 380, "radius": 60}
+
         #--- Define HSV limits
         blue_min = (22,79,127)
         blue_max = (169, 255, 255) 
@@ -320,7 +322,11 @@ class Sentry:
             ## end blob detection
                 
             # draw hollow circle
-            cv2.circle(frame, (420, 380), 60, (0, 255, 0), 5)
+            if keypoints:
+                if (x - target_location["x"])**2 + (y - target_location["y"])**2 < target_location["radius"]**2:
+                    cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
+                else:
+                    cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 0, 255), 5)
 
             # overlay the lines image onto the resized frame
             combined_frame = cv2.addWeighted(frame, 1, target_lines, 0.5, 0)
