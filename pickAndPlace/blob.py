@@ -251,6 +251,19 @@ if __name__=="__main__":
     #--- Define area limit [x_min, y_min, x_max, y_max] adimensional (0.0 to 1.0) starting from top left corner
     window = [0.05, 0.25, 0.95, 0.95]
     
+    blob_parameters = cv2.SimpleBlobDetector_Params()
+    blob_parameters.filterByArea = False
+    blob_parameters.minArea = 100
+    blob_parameters.maxArea = 1000
+    blob_parameters.filterByCircularity = True
+    blob_parameters.minCircularity = 0.5
+    blob_parameters.maxCircularity = 1.0
+    blob_parameters.filterByConvexity = True
+    blob_parameters.minConvexity = 0.5
+    blob_parameters.filterByInertia = True
+    blob_parameters.minInertiaRatio = 0.25
+
+
     #-- IMAGE_SOURCE: either 'camera' or 'imagelist'
     SOURCE = 'video'
     # SOURCE = 'camera'
@@ -266,7 +279,7 @@ if __name__=="__main__":
             
             #-- Detect keypoints
             keypoints, _ = blob_detect(frame, blue_min, blue_max, blur=10, 
-                                        blob_params=None, search_window=window, imshow=True)
+                                        blob_params=blob_parameters, search_window=window, imshow=True)
             #-- Draw search window
             frame     = draw_window(frame, window)
 
