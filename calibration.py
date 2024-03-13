@@ -21,7 +21,7 @@ def monitor():
             print("Error reading frame")
             break
 
-        # Rotate the image 90 degrees ccw
+        # Rotate the image 90 degrees cw
         rotated_frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
         # Resize image

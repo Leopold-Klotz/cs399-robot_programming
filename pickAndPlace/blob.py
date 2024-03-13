@@ -254,6 +254,9 @@ if __name__=="__main__":
         while(True):
             # Capture frame-by-frame
             ret, frame = cap.read()
+
+            # rotate frame 90 degrees cw
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
             
             #-- Detect keypoints
             keypoints, _ = blob_detect(frame, blue_min, blue_max, blur=3, 
