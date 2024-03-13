@@ -254,7 +254,7 @@ class Sentry:
         time.sleep(1)
 
         ## parameters for blob detection
-        target_location = {"x": 440, "y": 380, "radius": 60}
+        target_location = {"x": 400, "y": 380, "radius": 60}
 
         #--- Define HSV limits
         blue_min = (22,79,127)
