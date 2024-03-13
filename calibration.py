@@ -13,17 +13,17 @@ def monitor():
 
     # Keep looking for image
     cap = cv2.VideoCapture(0)
-    
+
     while True:
         ret, frame = cap.read()
-        
+
         if not ret or frame is None:
             print("Error reading frame")
             break
 
         # Rotate the image 90 degrees ccw
-        rotated_frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)   
-        
+        rotated_frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
         # Resize image
         resized_frame = cv2.resize(rotated_frame, (800, 800))
 
@@ -31,10 +31,10 @@ def monitor():
         combined_frame = cv2.addWeighted(resized_frame, 1, lines_image, 0.5, 0)
 
         cv2.imshow('Live', combined_frame)
-        
+
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-    
+
     cap.release()
     cv2.destroyAllWindows()
 
@@ -52,7 +52,7 @@ def process_image():
 
     while True:
         ret, frame = cap.read()
-        
+
         if not ret or frame is None:
             print("Error reading frame")
             break
@@ -70,12 +70,12 @@ def process_image():
 
         # Check for key press
         key = cv2.waitKey(1)
-        
+
         # If Enter key is pressed, capture the frame and process it
         if key == 13:  # 13 is the ASCII code for Enter key
             # Store the captured frame
             captured_frame = frame.copy()
-            
+
             # Create lines for all black pixels surrounded by other black pixels
             lines_image = captured_frame.copy()
             for y in range(1, lines_image.shape[0] - 1):
@@ -96,5 +96,3 @@ def process_image():
 
 if __name__ == "__main__":
     process_image()
-
-    monitor()
