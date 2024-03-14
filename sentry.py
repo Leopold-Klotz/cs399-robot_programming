@@ -12,7 +12,7 @@ MISTAKE_THRESHOLD = 0.2
 HANDTRACKING_LIMIT = 45 # 45 seconds of hand control
 CONTROL_LANDMARKS = [8, 4]  # landmarks for the tip of the pointer and thumb (change to thumb?)
 COMMAND_HOLD_MS = 5
-ROTATION_STEP = 5
+ROTATION_STEP = 3.5
 
 class Sentry:
     def __init__(self, port):
@@ -355,7 +355,7 @@ class Sentry:
                 
             # adjust base towards the object (X axis rotation)
             if keypoints:
-                movement = int(ROTATION_STEP * (x_diff / 100)) # 2 degrees per 100 pixels
+                movement = int(ROTATION_STEP * (x_diff / 50)) # 2 degrees per 100 pixels
 
                 # if the keypoint is to the left of the target, step the base to the left, and vice versa
                 if x < target_location["x"]:
@@ -372,6 +372,19 @@ class Sentry:
                     self.arm.setArticulation(1, current_artOne - movement)
 
             # drive the robot arm to the target (y axis forward/backward)
+            if keypoints:
+                if y_diff > 0:
+                    # display forward facing arrow
+                    arrow = "Moving: ^"
+                    cv2.putText(frame, arrow, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    # self.arm.setArticulation(2, 1500)
+
+                elif y_diff < 0:
+                    # display backward facing arrow
+                    arrow = "Moving: v"
+                    cv2.putText(frame, arrow, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    # self.arm.setArticulation(2, 2500)
+
 
             # # draw target circle
             # if keypoints:
