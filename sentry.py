@@ -404,7 +404,6 @@ class Sentry:
             # draw target horizontal lines
             if keypoints:
                 if y_diff < target_location["radius"]:
-                    print("y_diff: ", y_diff)
                     cv2.line(frame, (0, target_location["y"] - target_location["radius"]), (frame.shape[1], target_location["y"] - target_location["radius"]), (0, 255, 0), 2)
                     cv2.line(frame, (0, target_location["y"] + target_location["radius"]), (frame.shape[1], target_location["y"] + target_location["radius"]), (0, 255, 0), 2)
                     inbound_y = True
@@ -418,6 +417,8 @@ class Sentry:
             key = cv2.waitKey(1)
 
             if inbound_x and inbound_y: # 5 seconds -> command hold time from ms to s
+                inbound_x = False
+                inbound_y = False
                 # pick up the object
                 print("grabbing object")
                 self.grab_object()
@@ -426,8 +427,6 @@ class Sentry:
                 print("Depositing object")
                 self.drop_in_bucket()
                 print("object deposited")
-                inbound_x = False
-                inbound_y = False
                 inbound_time = 0
 
             if key == ord('d') and self.holding_object:
