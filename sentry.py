@@ -305,7 +305,8 @@ class Sentry:
         self.arm.loadPositionSettings("sentry_monitor")
 
         # time the object is in the inbound region
-        inbound_time = 0
+        inbound_x_time = 0
+        inbound_y_time = 0
         inbound_x = False
         inbound_y = False
 
@@ -334,7 +335,7 @@ class Sentry:
             frame     = draw_window(frame, window)
 
             #-- click ENTER on the image window to proceed
-            draw_keypoints(frame, keypoints, imshow=False)
+            draw_keypoints(frame, keypoints, imshow=True)
 
             if keypoints:
                 # Display the keypoint coordinates on top of the image
@@ -388,35 +389,40 @@ class Sentry:
 
             # draw target vertical lines
             if keypoints:
-                if x_diff < target_location["radius"]:
+                if (x < target_location["x"] + target_location["radius"]) and (x > target_location["x"] - target_location["radius"]):
                     cv2.line(frame, (target_location["x"] - target_location["radius"], 0), (target_location["x"] - target_location["radius"], frame.shape[0]), (0, 255, 0), 2)
                     cv2.line(frame, (target_location["x"] + target_location["radius"], 0), (target_location["x"] + target_location["radius"], frame.shape[0]), (0, 255, 0), 2)
                     inbound_x = True
-                    cv2.putText(frame, f"Inbound Time: {int(inbound_time/2.5)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                    print(f"Inbound Time: {int(inbound_time)}")
-                    inbound_time += 1
+                    cv2.putText(frame, f"Inbound_X Time: {int(inbound_x_time/2.5)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    print(f"Inbound_X Time: {int(inbound_x_time)}")
+                    inbound_x_time += 1
                 else:
                     cv2.line(frame, (target_location["x"] - target_location["radius"], 0), (target_location["x"] - target_location["radius"], frame.shape[0]), (0, 0, 255), 2)
                     cv2.line(frame, (target_location["x"] + target_location["radius"], 0), (target_location["x"] + target_location["radius"], frame.shape[0]), (0, 0, 255), 2)                    
                     inbound_x = False
-                    inbound_time = 0
+                    inbound_x_time = 0
 
             # draw target horizontal lines
             if keypoints:
-                if y_diff < target_location["radius"]:
+                if (y < target_location["y"] + target_location["radius"]) and (y > target_location["y"] - target_location["radius"]):
                     cv2.line(frame, (0, target_location["y"] - target_location["radius"]), (frame.shape[1], target_location["y"] - target_location["radius"]), (0, 255, 0), 2)
                     cv2.line(frame, (0, target_location["y"] + target_location["radius"]), (frame.shape[1], target_location["y"] + target_location["radius"]), (0, 255, 0), 2)
                     inbound_y = True
+                    cv2.putText(frame, f"Inbound_Y Time: {int(inbound_y_time/2.5)}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                    print(f"Inbound_Y Time: {int(inbound_y_time)}")
+                    inbound_y_time += 1
                 else:
                     cv2.line(frame, (0, target_location["y"] - target_location["radius"]), (frame.shape[1], target_location["y"] - target_location["radius"]), (0, 0, 255), 2)
                     cv2.line(frame, (0, target_location["y"] + target_location["radius"]), (frame.shape[1], target_location["y"] + target_location["radius"]), (0, 0, 255), 2)
                     inbound_y = False
+                    inbound_y_time = 0
 
             cv2.imshow('Live', frame)
 
             key = cv2.waitKey(1)
 
-            if inbound_x and inbound_y: # 5 seconds -> command hold time from ms to s
+            # Getting stuck in this sequence
+            if (inbound_x and inbound_y) and (inbound_x_time > COMMAND_HOLD_MS*2.5): # 5 seconds -> command hold time from ms to s
                 inbound_x = False
                 inbound_y = False
                 # pick up the object
@@ -427,7 +433,8 @@ class Sentry:
                 print("Depositing object")
                 self.drop_in_bucket()
                 print("object deposited")
-                inbound_time = 0
+                inbound_x_time = 0
+                inbound_y_time = 0
 
             if key == ord('d') and self.holding_object:
                 # drop the object
