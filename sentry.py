@@ -398,6 +398,7 @@ class Sentry:
                 print("object deposited")
 
                 inbound_time = 0
+                target_reached = False
 
             if key == ord('d') and self.holding_object:
                 # drop the object
