@@ -169,6 +169,25 @@ class RobotArm(Controller):
                 print(f"No positions found for {name}")
         time.sleep(0.5)
 
+    def adjust_saved_position(self, name, articulation, position):
+        """
+        Adjusts the position of the specified articulation in the specified saved position.
+            inputs: name (str) - the name of the position to adjust
+            inputs: articulation (int) - the articulation number to adjust
+            inputs: position (int) - the new position to set the articulation to
+            result: updates the position of the specified articulation in the specified saved position
+        """
+        with open("saved_positions.json", "r") as file:
+            saved_positions = json.load(file)
+            positions = saved_positions["positions"].get(name)
+            if positions is not None:
+                positions[articulation] = position
+                saved_positions["positions"][name] = positions
+                with open("saved_positions.json", "w") as file:
+                    json.dump(saved_positions, file, indent=2)
+            else:
+                print(f"No positions found for {name}")
+
     def home_arm(self):
         """
         Moves the arm to the home position (all articulations at 1500, claw at 1500) (straight up).

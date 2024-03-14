@@ -12,6 +12,7 @@ MISTAKE_THRESHOLD = 0.2
 HANDTRACKING_LIMIT = 45 # 45 seconds of hand control
 CONTROL_LANDMARKS = [8, 4]  # landmarks for the tip of the pointer and thumb (change to thumb?)
 COMMAND_HOLD_MS = 5
+ROTATION_STEP = 2
 
 class Sentry:
     def __init__(self, port):
@@ -229,6 +230,10 @@ class Sentry:
             cv2.waitKey(1) # wait for 1 millisecond between frames
 
     def grab_object(self):
+        # adjust the grab positions to the current art 1 position
+        self.arm.adjust_saved_position("grab_open", 1, self.arm.getArticulation(1))
+        self.arm.adjust_saved_position("grab_closed", 1, self.arm.getArticulation(1))
+
         #go to the grab position
         self.arm.loadPositionSettings("grab_open")
         time.sleep(1)
@@ -318,6 +323,7 @@ class Sentry:
                 x = int(x)
                 y = int(y)
                 print("keypoint coordinates: ", (x,y), end='\r')
+                print(" ")
                 cv2.putText(frame, f"Keypoint: ({x}, {y})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
             ## end blob detection
@@ -326,13 +332,16 @@ class Sentry:
             if keypoints:
                 # if the keypoint is to the left of the target, step the base to the left, and vice versa
                 if x < target_location["x"]:
+                    print("moving base to the left", end='\r')
                     current_artOne = self.arm.getArticulation(1)
-                    self.arm.setArticulation(1, current_artOne + 1)
+                    self.arm.setArticulation(1, current_artOne + ROTATION_STEP)
                 elif x > target_location["x"]:
+                    print("moving base to the right", end='\r')
                     current_artOne = self.arm.getArticulation(1)
-                    self.arm.setArticulation(1, current_artOne - 1)
+                    self.arm.setArticulation(1, current_artOne - ROTATION_STEP)
 
-                
+            print(" ")  # New line for better readability of the printed output
+
             # draw target circle
             if keypoints:
                 if (x - target_location["x"])**2 + (y - target_location["y"])**2 < target_location["radius"]**2:
