@@ -418,6 +418,7 @@ class Sentry:
                     inbound_y_time = 0
 
             cv2.imshow('Live', frame)
+            print(" ")
 
             key = cv2.waitKey(1)
 
