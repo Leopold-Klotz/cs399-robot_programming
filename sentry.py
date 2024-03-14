@@ -322,6 +322,17 @@ class Sentry:
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
             ## end blob detection
                 
+            # adjust base towards the object
+            if keypoints:
+                # if the keypoint is to the left of the target, step the base to the left, and vice versa
+                if x < target_location["x"]:
+                    current_artOne = self.arm.getArticulation(1)
+                    self.arm.setArticulation(1, current_artOne + 1)
+                elif x > target_location["x"]:
+                    current_artOne = self.arm.getArticulation(1)
+                    self.arm.setArticulation(1, current_artOne - 1)
+
+                
             # draw target circle
             if keypoints:
                 if (x - target_location["x"])**2 + (y - target_location["y"])**2 < target_location["radius"]**2:

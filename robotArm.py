@@ -67,6 +67,27 @@ class RobotArm(Controller):
         self.claw["Position"] = position
         time.sleep(0.5)
 
+    def getArticulation(self, articulation):
+        """
+        Returns the current position of the specified articulation.
+            inputs: articulation (int) - the articulation number to get the position of
+            result: returns the position of the specified articulation
+        """
+        if articulation == 1:
+            return self.art1["Position"]
+        elif articulation == 2:
+            return self.art2["Position"]
+        elif articulation == 3:
+            return self.art3["Position"]
+        elif articulation == 4:
+            return self.art4["Position"]
+        elif articulation == 5:
+            return self.art5["Position"]
+        elif articulation == 6:
+            return self.claw["Position"]
+        else:
+            print("Invalid articulation number. Please enter a number between 1 and 6.")
+
     def setArticulation(self, articulation, position, wait=False):
         """
         Moves the specified articulation to the specified position.
