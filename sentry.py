@@ -357,6 +357,9 @@ class Sentry:
             if keypoints:
                 movement = int(ROTATION_STEP * (x_diff / 50)) # 2 degrees per 100 pixels
 
+                if (x < target_location["x"] + target_location["radius"]) and (x > target_location["x"] - target_location["radius"]):
+                    movement = int(ROTATION_STEP * (x_diff / 100)) # 2 degrees per 100 pixels
+
                 # if the keypoint is to the left of the target, step the base to the left, and vice versa
                 if x < target_location["x"]:
                     # display left facing arrow
@@ -373,16 +376,17 @@ class Sentry:
 
             # drive the robot arm to the target (y axis forward/backward)
             if keypoints:
-                if y_diff > 0:
+
+                if y < target_location["y"]:
                     # display forward facing arrow
                     arrow = "Moving: ^"
-                    cv2.putText(frame, arrow, (frame.shape[0] - 10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    cv2.putText(frame, arrow, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     # self.arm.setArticulation(2, 1500)
 
-                elif y_diff < 0:
+                elif y > target_location["y"]:
                     # display backward facing arrow
                     arrow = "Moving: v"
-                    cv2.putText(frame, arrow, (frame.shape[0] - 10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    cv2.putText(frame, arrow, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     # self.arm.setArticulation(2, 2500)
 
 
@@ -431,7 +435,7 @@ class Sentry:
                     inbound_y_time = 0
 
             cv2.imshow('Live', frame)
-            print(" ")
+            print(" ", end='')
 
             key = cv2.waitKey(1)
 
