@@ -323,7 +323,6 @@ class Sentry:
                 x = int(x)
                 y = int(y)
                 print("keypoint coordinates: ", (x,y), end='\r')
-                print(" ")
                 cv2.putText(frame, f"Keypoint: ({x}, {y})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
 
@@ -335,18 +334,16 @@ class Sentry:
                 # if the keypoint is to the left of the target, step the base to the left, and vice versa
                 if x < target_location["x"]:
                     # display left facing arrow
-                    arrow = "<--"
-                    cv2.putText(frame, arrow, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    arrow = "Moving: <--"
+                    cv2.putText(frame, arrow, (395, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
                     current_artOne = self.arm.getArticulation(1)
-                    self.arm.setArticulation(1, current_artOne + ROTATION_STEP)
+                    self.arm.setArticulation(1, current_artOne + distance_to_target/ROTATION_STEP)
                 elif x > target_location["x"]:
                     # display right facing arrow
-                    arrow = "-->"
-                    cv2.putText(frame, arrow, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    arrow = "Moving: -->"
+                    cv2.putText(frame, arrow, (395, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
                     current_artOne = self.arm.getArticulation(1)
-                    self.arm.setArticulation(1, current_artOne - ROTATION_STEP)
-
-            print(" ")  # New line for better readability of the printed output
+                    self.arm.setArticulation(1, current_artOne - distance_to_target/ROTATION_STEP)
 
             # draw target circle
             if keypoints:
