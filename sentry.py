@@ -426,7 +426,8 @@ class Sentry:
                 print("Depositing object")
                 self.drop_in_bucket()
                 print("object deposited")
-
+                inbound_x = False
+                inbound_y = False
                 inbound_time = 0
 
             if key == ord('d') and self.holding_object:
