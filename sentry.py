@@ -331,19 +331,21 @@ class Sentry:
                 
             # adjust base towards the object
             if keypoints:
+                movement = int(ROTATION_STEP * (distance_to_target / 100)) # 2 degrees per 100 pixels
+
                 # if the keypoint is to the left of the target, step the base to the left, and vice versa
                 if x < target_location["x"]:
                     # display left facing arrow
                     arrow = "Moving: <--"
                     cv2.putText(frame, arrow, (395, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
                     current_artOne = self.arm.getArticulation(1)
-                    self.arm.setArticulation(1, current_artOne + distance_to_target/ROTATION_STEP)
+                    self.arm.setArticulation(1, current_artOne + movement)
                 elif x > target_location["x"]:
                     # display right facing arrow
                     arrow = "Moving: -->"
                     cv2.putText(frame, arrow, (395, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
                     current_artOne = self.arm.getArticulation(1)
-                    self.arm.setArticulation(1, current_artOne - distance_to_target/ROTATION_STEP)
+                    self.arm.setArticulation(1, current_artOne - movement)
 
             # draw target circle
             if keypoints:
