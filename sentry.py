@@ -366,7 +366,7 @@ class Sentry:
                     arrow = "Moving: <--"
                     cv2.putText(frame, arrow, (395, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     current_artOne = self.arm.getArticulation(1)
-                    self.arm.setArticulation(1, current_artOne + movement)
+                    self.arm.setArticulation(1, current_artOne - movement)
                 elif x > target_location["x"]:
                     # display right facing arrow
                     arrow = "Moving: -->"
