@@ -348,10 +348,11 @@ class Sentry:
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
 
                 x_diff = x - target_location["x"]
+                y_diff = y - target_location["y"]
                 distance_to_target = ((x - target_location["x"])**2 + (y - target_location["y"])**2)**0.5 # **0.5 is the same as sqrt
             ## end blob detection
                 
-            # adjust base towards the object
+            # adjust base towards the object (X axis rotation)
             if keypoints:
                 movement = int(ROTATION_STEP * (x_diff / 100)) # 2 degrees per 100 pixels
 
@@ -369,18 +370,34 @@ class Sentry:
                     current_artOne = self.arm.getArticulation(1)
                     self.arm.setArticulation(1, current_artOne - movement)
 
-            # draw target circle
+            # drive the robot arm to the target (y axis forward/backward)
+
+            # # draw target circle
+            # if keypoints:
+            #     if x_diff < target_location["radius"]:
+            #         print("Rotation Target reached")
+            #         target_reached = True
+            #         cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
+            #         cv2.putText(frame, f"Inbound Time: {int(inbound_time/2.5)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            #         print(f"Inbound Time: {int(inbound_time)}")
+            #         inbound_time += 1
+            #     else:
+            #         target_reached = False
+            #         cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 0, 255), 5)
+            #         inbound_time = 0
+
+            # draw target vertical lines
             if keypoints:
                 if x_diff < target_location["radius"]:
-                    print("Target reached")
+                    print("Rotation Target reached")
                     target_reached = True
-                    cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
+                    cv2.line(frame, (target_location["x"], 0), (target_location["x"], frame.shape[0]), (0, 255, 0), 2)
                     cv2.putText(frame, f"Inbound Time: {int(inbound_time/2.5)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                     print(f"Inbound Time: {int(inbound_time)}")
                     inbound_time += 1
                 else:
                     target_reached = False
-                    cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 0, 255), 5)
+                    cv2.line(frame, (target_location["x"], 0), (target_location["x"], frame.shape[0]), (0, 0, 255), 2)
                     inbound_time = 0
 
             cv2.imshow('Live', frame)
