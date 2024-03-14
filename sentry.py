@@ -246,12 +246,27 @@ class Sentry:
 
         self.holding_object = True
 
+    def drop_in_bucket(self):
+        # go to the drop position
+        self.arm.loadPositionSettings("closed_bucket")
+        time.sleep(1)
+        # drop object
+        self.arm.loadPositionSettings("open_bucket")
+        time.sleep(1)
+        # return to the home position
+        self.arm.home_arm()
+        time.sleep(1)
+
+        self.holding_object = False
+
     def drop_object(self):
         # open the claw
         self.arm.setClaw(1500)
         time.sleep(1)
         self.arm.loadPositionSettings("sentry_monitor")
         time.sleep(1)
+
+        self.holding_object = False
 
     def monitor(self):
         # looping behavior state, sentry mode or target acquired
@@ -337,13 +352,13 @@ class Sentry:
                 if x < target_location["x"]:
                     # display left facing arrow
                     arrow = "Moving: <--"
-                    cv2.putText(frame, arrow, (395, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    cv2.putText(frame, arrow, (395, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     current_artOne = self.arm.getArticulation(1)
                     self.arm.setArticulation(1, current_artOne + movement)
                 elif x > target_location["x"]:
                     # display right facing arrow
                     arrow = "Moving: -->"
-                    cv2.putText(frame, arrow, (395, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+                    cv2.putText(frame, arrow, (395, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     current_artOne = self.arm.getArticulation(1)
                     self.arm.setArticulation(1, current_artOne - movement)
 
@@ -367,6 +382,10 @@ class Sentry:
                 print("grabbing object")
                 self.grab_object()
                 print("object grabbed")
+
+                print("Depositing object")
+                self.drop_in_bucket()
+                print("object deposited")
 
                 inbound_time = 0
 
