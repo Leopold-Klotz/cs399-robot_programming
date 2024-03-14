@@ -368,7 +368,7 @@ class Sentry:
 
             # draw target circle
             if keypoints:
-                if (x - target_location["x"])**2 + (y - target_location["y"])**2 < target_location["radius"]**2:
+                if distance_to_target < target_location["radius"]:
                     print("Target reached")
                     target_reached = True
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
