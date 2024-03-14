@@ -341,6 +341,8 @@ class Sentry:
                 x, y = keypoints[0].pt
                 x = int(x)
                 y = int(y)
+
+            if keypoints:
                 print("keypoint coordinates: ", (x,y), end='\r')
                 cv2.putText(frame, f"Keypoint: ({x}, {y})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
