@@ -391,13 +391,15 @@ class Sentry:
                 if x_diff < target_location["radius"]:
                     print("Rotation Target reached")
                     target_reached = True
-                    cv2.line(frame, (target_location["x"], 0), (target_location["x"], frame.shape[0]), (0, 255, 0), 2)
+                    cv2.line(frame, (target_location["x"] - target_location["radius"], 0), (target_location["x"] - target_location["radius"], frame.shape[0]), (0, 255, 0), 2)
+                    cv2.line(frame, (target_location["x"] + target_location["radius"], 0), (target_location["x"] + target_location["radius"], frame.shape[0]), (0, 255, 0), 2)
                     cv2.putText(frame, f"Inbound Time: {int(inbound_time/2.5)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                     print(f"Inbound Time: {int(inbound_time)}")
                     inbound_time += 1
                 else:
                     target_reached = False
-                    cv2.line(frame, (target_location["x"], 0), (target_location["x"], frame.shape[0]), (0, 0, 255), 2)
+                    cv2.line(frame, (target_location["x"] - target_location["radius"], 0), (target_location["x"] - target_location["radius"], frame.shape[0]), (0, 0, 255), 2)
+                    cv2.line(frame, (target_location["x"] + target_location["radius"], 0), (target_location["x"] + target_location["radius"], frame.shape[0]), (0, 0, 255), 2)                    
                     inbound_time = 0
 
             cv2.imshow('Live', frame)
