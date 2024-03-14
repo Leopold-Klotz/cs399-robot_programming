@@ -347,12 +347,13 @@ class Sentry:
                 cv2.putText(frame, f"Keypoint: ({x}, {y})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
 
+                x_diff = x - target_location["x"]
                 distance_to_target = ((x - target_location["x"])**2 + (y - target_location["y"])**2)**0.5 # **0.5 is the same as sqrt
             ## end blob detection
                 
             # adjust base towards the object
             if keypoints:
-                movement = int(ROTATION_STEP * (distance_to_target / 100)) # 2 degrees per 100 pixels
+                movement = int(ROTATION_STEP * (x_diff / 100)) # 2 degrees per 100 pixels
 
                 # if the keypoint is to the left of the target, step the base to the left, and vice versa
                 if x < target_location["x"]:
@@ -370,7 +371,7 @@ class Sentry:
 
             # draw target circle
             if keypoints:
-                if distance_to_target < target_location["radius"]:
+                if x_diff < target_location["radius"]:
                     print("Target reached")
                     target_reached = True
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
