@@ -256,6 +256,8 @@ class Sentry:
         # return to the home position
         self.arm.home_arm()
         time.sleep(1)
+        self.arm.loadPositionSettings("sentry_monitor")
+        time.sleep(1)
 
         self.holding_object = False
 
@@ -305,6 +307,8 @@ class Sentry:
         # time the object is in the inbound region
         inbound_time = 0
 
+        target_reached = False
+
         print("Press Enter to grab object, 'd' to drop object, and 'q' to quit.")
         
         while True:
@@ -332,7 +336,7 @@ class Sentry:
             #-- click ENTER on the image window to proceed
             draw_keypoints(frame, keypoints, imshow=False)
 
-            if keypoints:
+            if keypoints and not target_reached:
                 # Display the keypoint coordinates on top of the image
                 x, y = keypoints[0].pt
                 x = int(x)
@@ -365,11 +369,13 @@ class Sentry:
             # draw target circle
             if keypoints:
                 if (x - target_location["x"])**2 + (y - target_location["y"])**2 < target_location["radius"]**2:
+                    target_reached = True
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 255, 0), 5)
                     cv2.putText(frame, f"Inbound Time: {int(inbound_time/2.5)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                     print(f"Inbound Time: {int(inbound_time)}")
                     inbound_time += 1
                 else:
+                    target_reached = False
                     cv2.circle(frame, (target_location["x"], target_location["y"]), target_location["radius"], (0, 0, 255), 5)
                     inbound_time = 0
 
