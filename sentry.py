@@ -326,17 +326,23 @@ class Sentry:
                 print(" ")
                 cv2.putText(frame, f"Keypoint: ({x}, {y})", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
+
+                distance_to_target = ((x - target_location["x"])**2 + (y - target_location["y"])**2)**0.5 # **0.5 is the same as sqrt
             ## end blob detection
                 
             # adjust base towards the object
             if keypoints:
                 # if the keypoint is to the left of the target, step the base to the left, and vice versa
                 if x < target_location["x"]:
-                    print("moving base to the left", end='\r')
+                    # display left facing arrow
+                    arrow = "<--"
+                    cv2.putText(frame, arrow, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     current_artOne = self.arm.getArticulation(1)
                     self.arm.setArticulation(1, current_artOne + ROTATION_STEP)
                 elif x > target_location["x"]:
-                    print("moving base to the right", end='\r')
+                    # display right facing arrow
+                    arrow = "-->"
+                    cv2.putText(frame, arrow, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     current_artOne = self.arm.getArticulation(1)
                     self.arm.setArticulation(1, current_artOne - ROTATION_STEP)
 

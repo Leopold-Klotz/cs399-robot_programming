@@ -177,6 +177,8 @@ class RobotArm(Controller):
             inputs: position (int) - the new position to set the articulation to
             result: updates the position of the specified articulation in the specified saved position
         """
+        articulation = f"Art{articulation}"
+
         with open("saved_positions.json", "r") as file:
             saved_positions = json.load(file)
             positions = saved_positions["positions"].get(name)
