@@ -348,7 +348,7 @@ class Sentry:
                 cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 225), -1)
 
                 x_diff = x - target_location["x"]
-                y_diff = y - target_location["y"]
+                y_diff = target_location["y"] - y
                 distance_to_target = ((x - target_location["x"])**2 + (y - target_location["y"])**2)**0.5 # **0.5 is the same as sqrt
             ## end blob detection
                 
@@ -404,6 +404,7 @@ class Sentry:
             # draw target horizontal lines
             if keypoints:
                 if y_diff < target_location["radius"]:
+                    print("y_diff: ", y_diff)
                     cv2.line(frame, (0, target_location["y"] - target_location["radius"]), (frame.shape[1], target_location["y"] - target_location["radius"]), (0, 255, 0), 2)
                     cv2.line(frame, (0, target_location["y"] + target_location["radius"]), (frame.shape[1], target_location["y"] + target_location["radius"]), (0, 255, 0), 2)
                     inbound_y = True
