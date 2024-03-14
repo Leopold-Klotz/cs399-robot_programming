@@ -306,8 +306,8 @@ class Sentry:
 
         # time the object is in the inbound region
         inbound_time = 0
-
-        target_reached = False
+        inbound_x = False
+        inbound_y = False
 
         print("Press Enter to grab object, 'd' to drop object, and 'q' to quit.")
         
@@ -336,7 +336,7 @@ class Sentry:
             #-- click ENTER on the image window to proceed
             draw_keypoints(frame, keypoints, imshow=False)
 
-            if keypoints and not target_reached:
+            if keypoints:
                 # Display the keypoint coordinates on top of the image
                 x, y = keypoints[0].pt
                 x = int(x)
@@ -389,24 +389,34 @@ class Sentry:
             # draw target vertical lines
             if keypoints:
                 if x_diff < target_location["radius"]:
-                    print("Rotation Target reached")
-                    target_reached = True
                     cv2.line(frame, (target_location["x"] - target_location["radius"], 0), (target_location["x"] - target_location["radius"], frame.shape[0]), (0, 255, 0), 2)
                     cv2.line(frame, (target_location["x"] + target_location["radius"], 0), (target_location["x"] + target_location["radius"], frame.shape[0]), (0, 255, 0), 2)
+                    inbound_x = True
                     cv2.putText(frame, f"Inbound Time: {int(inbound_time/2.5)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                     print(f"Inbound Time: {int(inbound_time)}")
                     inbound_time += 1
                 else:
-                    target_reached = False
                     cv2.line(frame, (target_location["x"] - target_location["radius"], 0), (target_location["x"] - target_location["radius"], frame.shape[0]), (0, 0, 255), 2)
                     cv2.line(frame, (target_location["x"] + target_location["radius"], 0), (target_location["x"] + target_location["radius"], frame.shape[0]), (0, 0, 255), 2)                    
+                    inbound_x = False
                     inbound_time = 0
+
+            # draw target horizontal lines
+            if keypoints:
+                if y_diff < target_location["radius"]:
+                    cv2.line(frame, (0, target_location["y"] - target_location["radius"]), (frame.shape[1], target_location["y"] - target_location["radius"]), (0, 255, 0), 2)
+                    cv2.line(frame, (0, target_location["y"] + target_location["radius"]), (frame.shape[1], target_location["y"] + target_location["radius"]), (0, 255, 0), 2)
+                    inbound_y = True
+                else:
+                    cv2.line(frame, (0, target_location["y"] - target_location["radius"]), (frame.shape[1], target_location["y"] - target_location["radius"]), (0, 0, 255), 2)
+                    cv2.line(frame, (0, target_location["y"] + target_location["radius"]), (frame.shape[1], target_location["y"] + target_location["radius"]), (0, 0, 255), 2)
+                    inbound_y = False
 
             cv2.imshow('Live', frame)
 
             key = cv2.waitKey(1)
 
-            if inbound_time > COMMAND_HOLD_MS * 2.5: # 5 seconds -> command hold time from ms to s
+            if inbound_x and inbound_y: # 5 seconds -> command hold time from ms to s
                 # pick up the object
                 print("grabbing object")
                 self.grab_object()
@@ -417,7 +427,6 @@ class Sentry:
                 print("object deposited")
 
                 inbound_time = 0
-                target_reached = False
 
             if key == ord('d') and self.holding_object:
                 # drop the object
