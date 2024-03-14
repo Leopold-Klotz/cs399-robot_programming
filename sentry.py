@@ -12,7 +12,7 @@ MISTAKE_THRESHOLD = 0.2
 HANDTRACKING_LIMIT = 45 # 45 seconds of hand control
 CONTROL_LANDMARKS = [8, 4]  # landmarks for the tip of the pointer and thumb (change to thumb?)
 COMMAND_HOLD_MS = 5
-ROTATION_STEP = 3.5
+ROTATION_STEP = 2
 
 class Sentry:
     def __init__(self, port):
@@ -376,13 +376,13 @@ class Sentry:
                 if y_diff > 0:
                     # display forward facing arrow
                     arrow = "Moving: ^"
-                    cv2.putText(frame, arrow, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    cv2.putText(frame, arrow, (frame.shape[0] - 10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     # self.arm.setArticulation(2, 1500)
 
                 elif y_diff < 0:
                     # display backward facing arrow
                     arrow = "Moving: v"
-                    cv2.putText(frame, arrow, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                    cv2.putText(frame, arrow, (frame.shape[0] - 10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     # self.arm.setArticulation(2, 2500)
 
 
